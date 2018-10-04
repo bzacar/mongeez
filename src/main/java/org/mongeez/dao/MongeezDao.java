@@ -12,23 +12,14 @@
 
 package org.mongeez.dao;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.mongodb.*;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.mongeez.MongoAuth;
 import org.mongeez.commands.ChangeSet;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoCredential;
-import com.mongodb.QueryBuilder;
-import com.mongodb.WriteConcern;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MongeezDao {
     private DB db;
@@ -133,6 +124,16 @@ public class MongeezDao {
 
     public void runScript(String code) {
         db.eval(code);
+    }
+
+    private void executeCommand(String command) {
+        Process p;
+        try {
+            p = Runtime.getRuntime().exec(new String[]{"bash", "-c", command});
+            p.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void logChangeSet(ChangeSet changeSet) {
