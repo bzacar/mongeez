@@ -1,0 +1,92 @@
+/*
+ * Copyright 2011 SecondMarket Labs, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at  http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+package org.mongeez
+
+import com.mongodb.Mongo
+import org.mongeez.reader.ChangeSetFileProvider
+import org.mongeez.validation.ChangeSetsValidator
+import org.mongeez.validation.DefaultChangeSetsValidator
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.core.io.Resource
+
+/**
+ * @author oleksii
+ * @since 5/2/11
+ */
+class MongeezRunner : InitializingBean {
+    var isExecuteEnabled = false
+    private lateinit var mongo: Mongo
+    lateinit var dbName: String
+    private var file: Resource? = null
+
+    private var userName: String? = null
+    private var passWord: String? = null
+    private var authDb: String? = null
+
+    private var changeSetFileProvider: ChangeSetFileProvider? = null
+
+    private var changeSetsValidator: ChangeSetsValidator? = null
+
+    @Throws(Exception::class)
+    override fun afterPropertiesSet() {
+        if (isExecuteEnabled) {
+            execute()
+        }
+    }
+
+    fun execute() {
+        val mongeez = Mongeez()
+        mongeez.setMongo(mongo)
+        mongeez.setDbName(dbName)
+
+        if (changeSetsValidator != null) {
+            mongeez.setChangeSetsValidator(changeSetsValidator!!)
+        } else {
+            mongeez.setChangeSetsValidator(DefaultChangeSetsValidator())
+        }
+
+        if (changeSetFileProvider != null) {
+            mongeez.setChangeSetFileProvider(changeSetFileProvider!!)
+        } else {
+            mongeez.setFile(file!!)
+            if (!userName.isNullOrEmpty() && !passWord.isNullOrEmpty()) {
+                mongeez.setAuth(MongoAuth(userName!!, passWord!!, authDb))
+            }
+        }
+
+        mongeez.process()
+    }
+
+    fun setMongo(mongo: Mongo) {
+        this.mongo = mongo
+    }
+
+    fun setFile(file: Resource) {
+        this.file = file
+    }
+
+    fun setChangeSetFileProvider(changeSetFileProvider: ChangeSetFileProvider) {
+        this.changeSetFileProvider = changeSetFileProvider
+    }
+
+    fun setUserName(userName: String) {
+        this.userName = userName
+    }
+
+    fun setPassWord(passWord: String) {
+        this.passWord = passWord
+    }
+
+    fun setAuthDb(authDb: String) {
+        this.authDb = authDb
+    }
+}

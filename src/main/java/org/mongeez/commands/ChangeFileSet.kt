@@ -10,17 +10,22 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package org.mongeez.reader;
+package org.mongeez.commands
 
-import org.mongeez.commands.ChangeSet;
-import org.springframework.core.io.Resource;
+import java.util.ArrayList
 
-import java.util.List;
+class ChangeFileSet {
+    private var changeFiles: MutableList<ChangeFile> = ArrayList()
 
-public interface ChangeSetReader {
+    fun add(changeFile: ChangeFile) {
+        this.changeFiles.add(changeFile)
+    }
 
-    boolean supports(Resource file);
+    fun getChangeFiles(): List<ChangeFile> {
+        return changeFiles
+    }
 
-    List<ChangeSet> getChangeSets(Resource file);
-
+    fun setChangeFiles(changeFile: MutableList<ChangeFile>) {
+        this.changeFiles = changeFile
+    }
 }

@@ -10,17 +10,14 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package org.mongeez.commands;
+package org.mongeez.reader
 
-public class ChangeFile {
+import org.mongeez.commands.ChangeSet
+import org.springframework.core.io.Resource
 
-    public String path = null;
+interface ChangeSetReader {
 
-    public String getPath() {
-        return path;
-    }
+    fun supports(file: Resource): Boolean
 
-    public void setPath(String path) {
-        this.path = path;
-    }
+    fun getChangeSets(file: Resource): List<ChangeSet>
 }

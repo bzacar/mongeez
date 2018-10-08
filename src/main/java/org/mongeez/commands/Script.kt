@@ -9,27 +9,22 @@
  * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
+package org.mongeez.commands
 
-package org.mongeez.commands;
+import org.mongeez.dao.MongeezDao
 
-import java.util.ArrayList;
-import java.util.List;
+/**
+ * @author oleksii
+ * @since 5/3/11
+ */
+class Script() {
+    lateinit var body: String
 
-public class ChangeSetList {
-    List<ChangeSet> list = null;
-
-    public List<ChangeSet> getList() {
-        if (list == null) {
-            list = new ArrayList<ChangeSet>();
-        }
-        return list;
+    constructor(body: String) : this() {
+        this.body = body
     }
 
-    public void setList(List<ChangeSet> list) {
-        this.list = list;
-    }
-
-    public void add(ChangeSet changeSet) {
-        getList().add(changeSet);
+    fun run(dao: MongeezDao) {
+        dao.runScript(body)
     }
 }
