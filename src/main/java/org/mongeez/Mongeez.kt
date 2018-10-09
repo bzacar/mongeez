@@ -29,6 +29,7 @@ class Mongeez {
     private lateinit var changeSetFileProvider: ChangeSetFileProvider
     private var changeSetsValidator: ChangeSetsValidator = DefaultChangeSetsValidator()
     private var context: String? = null
+    private var useMongoShell = false
 
     private val changeSets: List<ChangeSet>
         get() {
@@ -46,7 +47,7 @@ class Mongeez {
 
     fun process() {
         val changeSets = changeSets
-        ChangeSetExecutor(mongo, dbName, context, auth).execute(changeSets)
+        ChangeSetExecutor(mongo, dbName, context, auth, useMongoShell).execute(changeSets)
     }
 
     private fun logChangeSets(changeSets: List<ChangeSet>) {
@@ -95,6 +96,10 @@ class Mongeez {
 
     fun setContext(context: String) {
         this.context = context
+    }
+
+    fun setUseMongoShell(useMongoShell: Boolean) {
+        this.useMongoShell = useMongoShell
     }
 
     companion object {

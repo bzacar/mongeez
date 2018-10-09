@@ -24,8 +24,13 @@ import org.apache.commons.lang3.time.DateFormatUtils
 import org.mongeez.MongoAuth
 import org.mongeez.commands.ChangeSet
 
-class MongeezDao(mongo: Mongo, databaseName: String, auth: MongoAuth? = null) {
+class MongeezDao(mongo: Mongo,
+                 databaseName: String,
+                 auth: MongoAuth? = null,
+                 private val useMongoShell: Boolean = false) {
+
     private val db: DB
+    private val mongoShellRunner: MongoShellRunner
     private var changeSetAttributes = emptyList<ChangeSetAttribute>()
 
     private val mongeezCollection: DBCollection
@@ -40,8 +45,8 @@ class MongeezDao(mongo: Mongo, databaseName: String, auth: MongoAuth? = null) {
             }
         } ?: emptyList()
 
-        val client = MongoClient(mongo.serverAddressList, credentials)
-        db = client.getDB(databaseName)
+        db = MongoClient(mongo.serverAddressList, credentials).getDB(databaseName)
+        mongoShellRunner = MongoShellRunner(mongo.serverAddressList, databaseName, credentials)
         configure()
     }
 
@@ -117,15 +122,10 @@ class MongeezDao(mongo: Mongo, databaseName: String, auth: MongoAuth? = null) {
     }
 
     fun runScript(code: String) {
-        db.eval(code)
-    }
-
-    private fun executeCommand(command: String) {
-        try {
-            val p: Process = Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
-            p.waitFor()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        if (useMongoShell) {
+            mongoShellRunner.run(code)
+        }else{
+            db.eval(code)
         }
     }
 

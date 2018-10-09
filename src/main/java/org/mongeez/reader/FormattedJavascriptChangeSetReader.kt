@@ -59,13 +59,15 @@ constructor(private val cs: Charset = Charset.forName("UTF-8")) : ChangeSetReade
                     changeSets.add(newChangeSet)
                     changeSet = newChangeSet
                     scriptBody = StringBuilder()
+                } else if (!line.isCode()) {
+                    // Silently ignore whitespace-only and comment-only lines
                 } else if (scriptBody != null) {
                     scriptBody?.appendln(line)
-                } else if (line.trim().isNotEmpty() && !line.startsWith(LINE_COMMENT)) {
+                } else if (line.isCode()) {
                     throw ParseException("$file has content outside of a changeset.  " +
                             "To start a changeset, add a comment in the format:\n" +
                             "${LINE_COMMENT}changeset author:id", 0)
-                } // Silently ignore whitespace-only and comment-only lines
+                }
             }
             addScriptToChangeSet(changeSet, scriptBody)
         } finally {
@@ -76,6 +78,8 @@ constructor(private val cs: Charset = Charset.forName("UTF-8")) : ChangeSetReade
         }
         return changeSets
     }
+
+    private fun String.isCode() = trim().isNotEmpty() && !startsWith(LINE_COMMENT)
 
     @Throws(ParseException::class)
     private fun addScriptToChangeSet(changeSet: ChangeSet?, scriptBody: StringBuilder?) {
