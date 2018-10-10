@@ -3,16 +3,15 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="mongoUri" class="com.mongodb.MongoURI">
-        <constructor-arg value="mongodb://localhost/assets"/>
-    </bean>
+    <bean id="serverAddress" class="com.mongodb.ServerAddress"/>
+
     <bean id="mongo" class="com.mongodb.Mongo">
-        <constructor-arg ref="mongoUri"/>
+        <constructor-arg ref="serverAddress"/>
     </bean>
 
     <bean id="mongeez" class="org.mongeez.MongeezRunner">
         <property name="executeEnabled" value="true"/>
-        <property name="mongo" ref="mongo"/>
+        <property name="serverAddress" ref="serverAddress"/>
         <property name="dbName" value="assets"/>
         <property name="file" value="classpath:org/mongeez/examples/mongo/mongeez.xml"/>
     </bean>

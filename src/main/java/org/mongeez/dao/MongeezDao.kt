@@ -12,41 +12,40 @@
 
 package org.mongeez.dao
 
-import com.mongodb.BasicDBObject
-import com.mongodb.DB
-import com.mongodb.DBCollection
-import com.mongodb.Mongo
 import com.mongodb.MongoClient
-import com.mongodb.MongoCredential
-import com.mongodb.QueryBuilder
-import com.mongodb.WriteConcern
-import org.apache.commons.lang3.time.DateFormatUtils
+import com.mongodb.MongoClientOptions
+import com.mongodb.ServerAddress
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.MongoDatabase
+import com.mongodb.client.model.Filters.eq
+import com.mongodb.client.model.Filters.exists
+import com.mongodb.client.model.Indexes.ascending
+import com.mongodb.client.model.Updates.set
+import org.apache.commons.lang3.time.DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT
+import org.bson.Document
 import org.mongeez.MongoAuth
 import org.mongeez.commands.ChangeSet
 
-class MongeezDao(mongo: Mongo,
+class MongeezDao(serverAddress: ServerAddress,
                  databaseName: String,
                  auth: MongoAuth? = null,
                  private val useMongoShell: Boolean = false) {
 
-    private val db: DB
+    private val db: MongoDatabase
     private val mongoShellRunner: MongoShellRunner
     private var changeSetAttributes = emptyList<ChangeSetAttribute>()
 
-    private val mongeezCollection: DBCollection
+    private val mongeezCollection: MongoCollection<Document>
         get() = db.getCollection("mongeez")
 
     init {
-        val credentials = auth?.let {
-            if (it.authDb == null || it.authDb == databaseName) {
-                listOf(MongoCredential.createCredential(it.username, databaseName, it.password.toCharArray()))
-            } else {
-                listOf(MongoCredential.createCredential(it.username, it.authDb, it.password.toCharArray()))
-            }
-        } ?: emptyList()
-
-        db = MongoClient(mongo.serverAddressList, credentials).getDB(databaseName)
-        mongoShellRunner = MongoShellRunner(mongo.serverAddressList, databaseName, credentials)
+        val credential = auth?.getCredential(databaseName)
+        val clientOptions = MongoClientOptions.builder().build()
+        val mongoClient = credential
+                ?.let { MongoClient(serverAddress, it, clientOptions) }
+                ?: MongoClient(serverAddress, clientOptions)
+        db = mongoClient.getDatabase(databaseName)
+        mongoShellRunner = MongoShellRunner(serverAddress, databaseName, credential)
         configure()
     }
 
@@ -58,35 +57,35 @@ class MongeezDao(mongo: Mongo,
     }
 
     private fun addTypeToUntypedRecords() {
-        val q = QueryBuilder().put("type").exists(false).get()
-        val o = BasicDBObject("\$set", BasicDBObject("type", RecordType.changeSetExecution.name))
-        mongeezCollection.update(q, o, false, true, WriteConcern.SAFE)
+        val query = exists("type", false)
+        val update = set("type", RecordType.changeSetExecution.name)
+        mongeezCollection.updateMany(query, update)
     }
 
     private fun loadConfigurationRecord() {
-        val q = QueryBuilder().put("type").`is`(RecordType.configuration.name).get()
-        val configRecord = mongeezCollection.findOne(q) ?: createNewConfigRecord()
-        val supportResourcePath = configRecord.get("supportResourcePath")
+        val query = eq("type", RecordType.configuration.name)
+        val configRecord = mongeezCollection.find(query).first() ?: createNewConfigRecord()
+        val supportResourcePath = configRecord.getBoolean("supportResourcePath")
         changeSetAttributes =
-                if (java.lang.Boolean.TRUE == supportResourcePath) {
+                if (supportResourcePath) {
                     DEFAULT_CHANGE_SET_ATTRIBUTES + ChangeSetAttribute.resourcePath
                 } else {
                     DEFAULT_CHANGE_SET_ATTRIBUTES
                 }
     }
 
-    private fun createNewConfigRecord(): BasicDBObject {
-        val configRecord = if (mongeezCollection.count() > 0L) {
+    private fun createNewConfigRecord(): Document {
+        val configRecord = if (mongeezCollection.countDocuments() > 0L) {
             // We have pre-existing records, so don't assume that they support the latest features
-            BasicDBObject()
+            Document()
                     .append("type", RecordType.configuration.name)
                     .append("supportResourcePath", false)
         } else {
-            BasicDBObject()
+            Document()
                     .append("type", RecordType.configuration.name)
                     .append("supportResourcePath", true)
         }
-        mongeezCollection.insert(configRecord, WriteConcern.SAFE)
+        mongeezCollection.insertOne(configRecord)
         return configRecord
     }
 
@@ -96,47 +95,40 @@ class MongeezDao(mongo: Mongo,
     private fun dropObsoleteChangeSetExecutionIndices() {
         val indexName = "type_changeSetExecution_file_1_changeId_1_author_1_resourcePath_1"
         val collection = mongeezCollection
-        for (dbObject in collection.indexInfo) {
-            if (indexName == dbObject.get("name")) {
-                collection.dropIndex(indexName)
-            }
-        }
+        collection.listIndexes()
+                .filter { indexName == it.getString("name") }
+                .forEach { collection.dropIndex(it) }
     }
 
     private fun ensureChangeSetExecutionIndex() {
-        val keys = BasicDBObject()
-        keys.append("type", 1)
-        for (attribute in changeSetAttributes) {
-            keys.append(attribute.name, 1)
-        }
-        mongeezCollection.createIndex(keys)
+        val attributeNames = listOf("type") + changeSetAttributes.map { it.name }
+        mongeezCollection.createIndex(ascending(attributeNames))
     }
 
     fun wasExecuted(changeSet: ChangeSet): Boolean {
-        val query = BasicDBObject()
-        query.append("type", RecordType.changeSetExecution.name)
+        val query = Document("type", RecordType.changeSetExecution.name)
         for (attribute in changeSetAttributes) {
             query.append(attribute.name, attribute.getAttributeValue(changeSet))
         }
-        return mongeezCollection.count(query) > 0
+        return mongeezCollection.countDocuments(query) > 0
     }
 
     fun runScript(code: String) {
         if (useMongoShell) {
             mongoShellRunner.run(code)
-        }else{
-            db.eval(code)
+        } else {
+            val command = Document("eval", code)
+            db.runCommand(command)
         }
     }
 
     fun logChangeSet(changeSet: ChangeSet) {
-        val dbObject = BasicDBObject()
-        dbObject.append("type", RecordType.changeSetExecution.name)
+        val dbObject = Document("type", RecordType.changeSetExecution.name)
         for (attribute in changeSetAttributes) {
             dbObject.append(attribute.name, attribute.getAttributeValue(changeSet))
         }
-        dbObject.append("date", DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(System.currentTimeMillis()))
-        mongeezCollection.insert(dbObject, WriteConcern.SAFE)
+        dbObject.append("date", ISO_DATETIME_TIME_ZONE_FORMAT.format(System.currentTimeMillis()))
+        mongeezCollection.insertOne(dbObject)
     }
 
     private companion object {

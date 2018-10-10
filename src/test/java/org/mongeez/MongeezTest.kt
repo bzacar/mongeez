@@ -13,7 +13,8 @@
 package org.mongeez
 
 import com.mongodb.DB
-import com.mongodb.Mongo
+import com.mongodb.MongoClient
+import com.mongodb.ServerAddress
 import org.mongeez.validation.ValidationException
 import org.springframework.core.io.ClassPathResource
 import org.testng.Assert.assertEquals
@@ -22,13 +23,13 @@ import org.testng.annotations.Test
 
 @Test
 class MongeezTest {
-    private lateinit var mongo: Mongo
+    private lateinit var serverAddress: ServerAddress
     private lateinit var db: DB
 
     @BeforeMethod
     fun setUp() {
-        mongo = Mongo()
-        db = mongo.getDB(DB_NAME)
+        serverAddress = ServerAddress()
+        db = MongoClient(serverAddress).getDB(DB_NAME)
         db.dropDatabase()
     }
 
@@ -142,7 +143,7 @@ class MongeezTest {
     private fun create(path: String): Mongeez {
         val mongeez = Mongeez()
         mongeez.setFile(ClassPathResource(path))
-        mongeez.setMongo(mongo)
+        mongeez.setServerAddress(serverAddress)
         mongeez.setDbName(DB_NAME)
         return mongeez
     }

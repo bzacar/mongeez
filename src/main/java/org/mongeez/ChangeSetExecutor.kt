@@ -12,19 +12,19 @@
 
 package org.mongeez
 
-import com.mongodb.Mongo
+import com.mongodb.ServerAddress
 import org.mongeez.commands.ChangeSet
 import org.mongeez.dao.MongeezDao
 import org.slf4j.LoggerFactory
 
-class ChangeSetExecutor(mongo: Mongo,
+class ChangeSetExecutor(serverAddress: ServerAddress,
                         dbName: String,
                         private val context: String?,
                         auth: MongoAuth? = null,
                         useMongoShell: Boolean = false) {
     private val logger = LoggerFactory.getLogger(ChangeSetExecutor::class.java)
 
-    private val dao: MongeezDao = MongeezDao(mongo, dbName, auth, useMongoShell)
+    private val dao: MongeezDao = MongeezDao(serverAddress, dbName, auth, useMongoShell)
 
     fun execute(changeSets: List<ChangeSet>) {
         changeSets.forEach { changeSet ->

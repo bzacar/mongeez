@@ -12,7 +12,7 @@
 
 package org.mongeez
 
-import com.mongodb.Mongo
+import com.mongodb.ServerAddress
 import org.mongeez.commands.ChangeSet
 import org.mongeez.reader.ChangeSetFileProvider
 import org.mongeez.reader.ChangeSetReaderFactory
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.io.Resource
 
 class Mongeez {
-    private lateinit var mongo: Mongo
+    private lateinit var serverAddress: ServerAddress
     private lateinit var dbName: String
     private var auth: MongoAuth? = null
     private lateinit var changeSetFileProvider: ChangeSetFileProvider
@@ -47,7 +47,7 @@ class Mongeez {
 
     fun process() {
         val changeSets = changeSets
-        ChangeSetExecutor(mongo, dbName, context, auth, useMongoShell).execute(changeSets)
+        ChangeSetExecutor(serverAddress, dbName, context, auth, useMongoShell).execute(changeSets)
     }
 
     private fun logChangeSets(changeSets: List<ChangeSet>) {
@@ -67,8 +67,8 @@ class Mongeez {
         }
     }
 
-    fun setMongo(mongo: Mongo) {
-        this.mongo = mongo
+    fun setServerAddress(serverAddress: ServerAddress) {
+        this.serverAddress = serverAddress
     }
 
     fun setDbName(dbName: String) {

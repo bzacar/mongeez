@@ -4,14 +4,15 @@ import com.mongodb.MongoCredential
 import com.mongodb.ServerAddress
 
 class MongoShellRunner
-constructor(serverAddressList: List<ServerAddress>,
+constructor(serverAddress: ServerAddress,
             private val databaseName: String,
-            private val credentials: List<MongoCredential>) {
+            private val credential: MongoCredential? = null) {
 
-    private val databaseHost: String = serverAddressList[0].host
+    private val databaseHost: String = serverAddress.host
+    private val databasePort: Int = serverAddress.port
 
     fun run(code: String) {
-        val command = "mongo $databaseName --eval '$code' --host $databaseHost ${credentials.getCredentialParameters()}"
+        val command = "mongo $databaseName --eval '$code' --host $databaseHost --port $databasePort ${credential.getCredentialParameters()}"
         executeCommand(command)
     }
 
@@ -25,11 +26,11 @@ constructor(serverAddressList: List<ServerAddress>,
     }
 
     private companion object {
-        fun List<MongoCredential>.getCredentialParameters(): String {
-            return if (isEmpty()) {
+        fun MongoCredential?.getCredentialParameters(): String {
+            return if (this == null) {
                 ""
             } else {
-                "-u ${first().userName} -p ${String(first().password)} --authenticationDatabase=${first().source}"
+                "-u $userName -p ${String(password)} --authenticationDatabase=$source"
             }
         }
     }

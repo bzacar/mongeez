@@ -11,7 +11,7 @@
  */
 package org.mongeez
 
-import com.mongodb.Mongo
+import com.mongodb.ServerAddress
 import org.mongeez.reader.ChangeSetFileProvider
 import org.mongeez.validation.ChangeSetsValidator
 import org.mongeez.validation.DefaultChangeSetsValidator
@@ -24,7 +24,7 @@ import org.springframework.core.io.Resource
  */
 class MongeezRunner : InitializingBean {
     var isExecuteEnabled = false
-    private lateinit var mongo: Mongo
+    private lateinit var serverAddress: ServerAddress
     lateinit var dbName: String
     private var file: Resource? = null
 
@@ -45,7 +45,7 @@ class MongeezRunner : InitializingBean {
 
     fun execute() {
         val mongeez = Mongeez()
-        mongeez.setMongo(mongo)
+        mongeez.setServerAddress(serverAddress)
         mongeez.setDbName(dbName)
 
         if (changeSetsValidator != null) {
@@ -66,8 +66,8 @@ class MongeezRunner : InitializingBean {
         mongeez.process()
     }
 
-    fun setMongo(mongo: Mongo) {
-        this.mongo = mongo
+    fun setServerAddress(serverAddress: ServerAddress) {
+        this.serverAddress = serverAddress
     }
 
     fun setFile(file: Resource) {
