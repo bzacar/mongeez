@@ -12,6 +12,6 @@
 
 package org.mongeez.dao
 
-enum class RecordType {
-    changeSetExecution, configuration
+enum class RecordType(val dbVal: String) {
+    CHANGE_SET_EXECUTION("changeSetExecution"), CONFIGURATION("configuration")
 }

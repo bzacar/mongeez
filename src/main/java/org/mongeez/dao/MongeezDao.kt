@@ -58,17 +58,17 @@ class MongeezDao(serverAddress: ServerAddress,
 
     private fun addTypeToUntypedRecords() {
         val query = exists("type", false)
-        val update = set("type", RecordType.changeSetExecution.name)
+        val update = set("type", RecordType.CHANGE_SET_EXECUTION.dbVal)
         mongeezCollection.updateMany(query, update)
     }
 
     private fun loadConfigurationRecord() {
-        val query = eq("type", RecordType.configuration.name)
+        val query = eq("type", RecordType.CONFIGURATION.dbVal)
         val configRecord = mongeezCollection.find(query).first() ?: createNewConfigRecord()
         val supportResourcePath = configRecord.getBoolean("supportResourcePath")
         changeSetAttributes =
                 if (supportResourcePath) {
-                    DEFAULT_CHANGE_SET_ATTRIBUTES + ChangeSetAttribute.resourcePath
+                    DEFAULT_CHANGE_SET_ATTRIBUTES + ChangeSetAttribute.RESOURCE_PATH
                 } else {
                     DEFAULT_CHANGE_SET_ATTRIBUTES
                 }
@@ -78,11 +78,11 @@ class MongeezDao(serverAddress: ServerAddress,
         val configRecord = if (mongeezCollection.countDocuments() > 0L) {
             // We have pre-existing records, so don't assume that they support the latest features
             Document()
-                    .append("type", RecordType.configuration.name)
+                    .append("type", RecordType.CONFIGURATION.dbVal)
                     .append("supportResourcePath", false)
         } else {
             Document()
-                    .append("type", RecordType.configuration.name)
+                    .append("type", RecordType.CONFIGURATION.dbVal)
                     .append("supportResourcePath", true)
         }
         mongeezCollection.insertOne(configRecord)
@@ -101,14 +101,14 @@ class MongeezDao(serverAddress: ServerAddress,
     }
 
     private fun ensureChangeSetExecutionIndex() {
-        val attributeNames = listOf("type") + changeSetAttributes.map { it.name }
+        val attributeNames = listOf("type") + changeSetAttributes.map { it.dbFieldName }
         mongeezCollection.createIndex(ascending(attributeNames))
     }
 
     fun wasExecuted(changeSet: ChangeSet): Boolean {
-        val query = Document("type", RecordType.changeSetExecution.name)
+        val query = Document("type", RecordType.CHANGE_SET_EXECUTION.dbVal)
         for (attribute in changeSetAttributes) {
-            query.append(attribute.name, attribute.getAttributeValue(changeSet))
+            query.append(attribute.dbFieldName, attribute.getAttributeValue(changeSet))
         }
         return mongeezCollection.countDocuments(query) > 0
     }
@@ -123,15 +123,15 @@ class MongeezDao(serverAddress: ServerAddress,
     }
 
     fun logChangeSet(changeSet: ChangeSet) {
-        val dbObject = Document("type", RecordType.changeSetExecution.name)
+        val dbObject = Document("type", RecordType.CHANGE_SET_EXECUTION.dbVal)
         for (attribute in changeSetAttributes) {
-            dbObject.append(attribute.name, attribute.getAttributeValue(changeSet))
+            dbObject.append(attribute.dbFieldName, attribute.getAttributeValue(changeSet))
         }
         dbObject.append("date", ISO_DATETIME_TIME_ZONE_FORMAT.format(System.currentTimeMillis()))
         mongeezCollection.insertOne(dbObject)
     }
 
     private companion object {
-        val DEFAULT_CHANGE_SET_ATTRIBUTES = listOf(ChangeSetAttribute.file, ChangeSetAttribute.changeId, ChangeSetAttribute.author)
+        val DEFAULT_CHANGE_SET_ATTRIBUTES = listOf(ChangeSetAttribute.FILE, ChangeSetAttribute.CHANGE_ID, ChangeSetAttribute.AUTHOR)
     }
 }

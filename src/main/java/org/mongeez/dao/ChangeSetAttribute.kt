@@ -14,23 +14,23 @@ package org.mongeez.dao
 
 import org.mongeez.commands.ChangeSet
 
-enum class ChangeSetAttribute {
-    file {
+enum class ChangeSetAttribute(val dbFieldName: String) {
+    FILE("file") {
         override fun getAttributeValue(changeSet: ChangeSet): String {
             return changeSet.file
         }
     },
-    changeId {
+    CHANGE_ID("changeId") {
         override fun getAttributeValue(changeSet: ChangeSet): String {
             return changeSet.changeId
         }
     },
-    author {
+    AUTHOR("author") {
         override fun getAttributeValue(changeSet: ChangeSet): String {
             return changeSet.author
         }
     },
-    resourcePath {
+    RESOURCE_PATH("resourcePath") {
         override fun getAttributeValue(changeSet: ChangeSet): String {
             return changeSet.resourcePath
         }
