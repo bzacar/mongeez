@@ -25,6 +25,7 @@ import org.apache.commons.lang3.time.DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORM
 import org.bson.Document
 import org.mongeez.MongoAuth
 import org.mongeez.commands.ChangeSet
+import org.mongeez.dao.shell.MongoShellRunner
 
 class MongeezDao(serverAddress: ServerAddress,
                  databaseName: String,
@@ -113,11 +114,12 @@ class MongeezDao(serverAddress: ServerAddress,
         return mongeezCollection.countDocuments(query) > 0
     }
 
-    fun runScript(code: String) {
+    fun runScript(code: String, util: String?) {
+        val theCode = util.getTheCode(code)
         if (useMongoShell) {
-            mongoShellRunner.run(code)
+            mongoShellRunner.run(theCode)
         } else {
-            val command = Document("eval", code)
+            val command = Document("eval", theCode)
             db.runCommand(command)
         }
     }
@@ -133,5 +135,13 @@ class MongeezDao(serverAddress: ServerAddress,
 
     private companion object {
         val DEFAULT_CHANGE_SET_ATTRIBUTES = listOf(ChangeSetAttribute.FILE, ChangeSetAttribute.CHANGE_ID, ChangeSetAttribute.AUTHOR)
+
+        fun String?.getTheCode(code: String): String {
+            return if (this == null) {
+                code
+            } else {
+                "$this\n$code"
+            }
+        }
     }
 }

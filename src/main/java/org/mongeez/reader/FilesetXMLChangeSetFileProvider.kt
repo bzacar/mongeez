@@ -10,10 +10,11 @@
 
 package org.mongeez.reader
 
+import org.mongeez.data.ChangeSetAndUtilFiles
 import org.springframework.core.io.Resource
 
 class FilesetXMLChangeSetFileProvider(private val file: Resource) : ChangeSetFileProvider {
 
-    override val changeSetFiles: List<Resource>
+    override val changeSetFiles: ChangeSetAndUtilFiles
         get() = FilesetXMLReader().getFiles(file)
 }

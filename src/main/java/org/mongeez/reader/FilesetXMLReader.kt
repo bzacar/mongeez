@@ -15,6 +15,7 @@ package org.mongeez.reader
 import org.apache.commons.digester3.Digester
 import org.mongeez.commands.ChangeFile
 import org.mongeez.commands.ChangeFileSet
+import org.mongeez.data.ChangeSetAndUtilFiles
 import org.mongeez.validation.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.Resource
@@ -22,12 +23,12 @@ import java.io.IOException
 
 class FilesetXMLReader {
 
-    fun getFiles(file: Resource): List<Resource> {
+    fun getFiles(file: Resource): ChangeSetAndUtilFiles {
         try {
             val digester = getDigester()
             logger.info("Parsing XML Fileset file {}", file.filename)
             val changeFileSet = digester.parse<Any>(file.inputStream) as? ChangeFileSet
-            return changeFileSet?.getResourceList(file)
+            return changeFileSet?.getChangeFilesAndUtil(file)
                     ?: throw ValidationException(getValidationExceptionMessage(file))
         } catch (e: IOException) {
             throw ValidationException(e)
@@ -36,13 +37,13 @@ class FilesetXMLReader {
         }
     }
 
-    private fun ChangeFileSet.getResourceList(file: Resource): List<Resource> {
-        val changeFiles = getChangeFiles()
+    private fun ChangeFileSet.getChangeFilesAndUtil(file: Resource): ChangeSetAndUtilFiles {
+        val changeFiles = getChangeFiles().map { changeFile ->
+            file.createRelative(changeFile.path)
+        }
+        val utilResource = util?.let { file.createRelative(it.path) }
         logger.info("Num of changefiles found " + changeFiles.size)
-        return changeFiles
-                .map { changeFile ->
-                    file.createRelative(changeFile.path)
-                }
+        return ChangeSetAndUtilFiles(changeFiles, utilResource)
     }
 
     companion object {
@@ -54,9 +55,11 @@ class FilesetXMLReader {
             addObjectCreate("changeFiles/file", ChangeFile::class.java)
             addSetProperties("changeFiles/file")
             addSetNext("changeFiles/file", "add")
+            addObjectCreate("changeFiles/util", ChangeFile::class.java)
+            addSetProperties("changeFiles/util")
+            addSetNext("changeFiles/util", "setUtil")
         }
 
-        private fun getValidationExceptionMessage(file: Resource)
-                = "The file ${file.filename} doesn't seem to contain a changeFiles declaration. Are you using the correct file to initialize Mongeez?"
+        private fun getValidationExceptionMessage(file: Resource) = "The file ${file.filename} doesn't seem to contain a changeFiles declaration. Are you using the correct file to initialize Mongeez?"
     }
 }

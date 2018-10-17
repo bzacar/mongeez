@@ -13,58 +13,24 @@
 package org.mongeez
 
 import com.mongodb.ServerAddress
-import org.mongeez.commands.ChangeSet
+import org.mongeez.data.ChangeSetAndUtilPairProvider
 import org.mongeez.reader.ChangeSetFileProvider
-import org.mongeez.reader.ChangeSetReaderFactory
 import org.mongeez.reader.FilesetXMLChangeSetFileProvider
 import org.mongeez.validation.ChangeSetsValidator
-import org.mongeez.validation.DefaultChangeSetsValidator
-import org.slf4j.LoggerFactory
 import org.springframework.core.io.Resource
 
 class Mongeez {
     private lateinit var serverAddress: ServerAddress
     private lateinit var dbName: String
     private var auth: MongoAuth? = null
-    private lateinit var changeSetFileProvider: ChangeSetFileProvider
-    private var changeSetsValidator: ChangeSetsValidator = DefaultChangeSetsValidator()
+    private val changeSetAndUtilPairProvider = ChangeSetAndUtilPairProvider()
     private var context: String? = null
     private var useMongoShell = false
 
-    private val changeSets: List<ChangeSet>
-        get() {
-            val readerFactory = ChangeSetReaderFactory.getInstance()
-            return changeSetFileProvider.changeSetFiles.asSequence()
-                    .mapNotNull { file ->
-                        readerFactory.getChangeSetReader(file)?.getChangeSets(file)
-                    }
-                    .flatten().toList()
-                    .also {
-                        logChangeSets(it)
-                        changeSetsValidator.validate(it)
-                    }
-        }
-
     fun process() {
-        val changeSets = changeSets
-        ChangeSetExecutor(serverAddress, dbName, context, auth, useMongoShell).execute(changeSets)
-    }
-
-    private fun logChangeSets(changeSets: List<ChangeSet>) {
-        if (logger.isTraceEnabled) {
-            changeSets.forEach { changeSet ->
-                logger.trace("Changeset")
-                logger.trace("id: " + changeSet.changeId)
-                logger.trace("author: " + changeSet.author)
-                if (changeSet.getContexts().isNotEmpty()) {
-                    logger.trace("contexts: {}", changeSet.getContexts())
-                }
-                changeSet.getCommands().forEach { command ->
-                    logger.trace("script")
-                    logger.trace(command.body)
-                }
-            }
-        }
+        val changeSets = changeSetAndUtilPairProvider.get()
+        val changeSetExecutor = ChangeSetExecutor(serverAddress, dbName, auth, useMongoShell)
+        ChangeSetsExecutor(context, changeSetExecutor).execute(changeSets)
     }
 
     fun setServerAddress(serverAddress: ServerAddress) {
@@ -80,7 +46,7 @@ class Mongeez {
     }
 
     fun setChangeSetsValidator(changeSetsValidator: ChangeSetsValidator) {
-        this.changeSetsValidator = changeSetsValidator
+        this.changeSetAndUtilPairProvider.changeSetsValidator = changeSetsValidator
     }
 
     /**
@@ -91,7 +57,7 @@ class Mongeez {
     }
 
     fun setChangeSetFileProvider(changeSetFileProvider: ChangeSetFileProvider) {
-        this.changeSetFileProvider = changeSetFileProvider
+        this.changeSetAndUtilPairProvider.changeSetFileProvider = changeSetFileProvider
     }
 
     fun setContext(context: String) {
@@ -101,9 +67,4 @@ class Mongeez {
     fun setUseMongoShell(useMongoShell: Boolean) {
         this.useMongoShell = useMongoShell
     }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(Mongeez::class.java)
-    }
-
 }

@@ -16,6 +16,7 @@ import java.util.ArrayList
 
 class ChangeFileSet {
     private var changeFiles: MutableList<ChangeFile> = ArrayList()
+    var util: ChangeFile? = null
 
     fun add(changeFile: ChangeFile) {
         this.changeFiles.add(changeFile)

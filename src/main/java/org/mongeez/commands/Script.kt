@@ -24,7 +24,7 @@ class Script() {
         this.body = body
     }
 
-    fun run(dao: MongeezDao) {
-        dao.runScript(body)
+    fun run(dao: MongeezDao, util: String?) {
+        dao.runScript(body, util)
     }
 }

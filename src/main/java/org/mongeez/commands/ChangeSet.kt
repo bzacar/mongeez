@@ -20,10 +20,11 @@ class ChangeSet {
     lateinit var file: String
     lateinit var resourcePath: String
     private var contextsStr: String? = null
-    private var contexts: List<String>? = null
+    private var contexts: Set<String>? = null
 
     var isFailOnError = true
     var isRunAlways: Boolean = false
+    var useUtil: Boolean = false
 
     private val commands = ArrayList<Script>()
 
@@ -57,12 +58,12 @@ class ChangeSet {
                         requiredContext.toLowerCase().trim()
                     }
                     .filter { it.isNotEmpty() }
-                    .toList()
+                    .toSet()
         }
-        return getContextsList().isEmpty() || context != null && getContextsList().contains(context.toLowerCase().trim())
+        return getContextsSet().isEmpty() || context != null && getContextsSet().contains(context.toLowerCase().trim())
     }
 
     private fun getContextStr() = contextsStr ?: ""
 
-    private fun getContextsList() = contexts ?: emptyList()
+    private fun getContextsSet() = contexts ?: emptySet()
 }

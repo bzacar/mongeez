@@ -10,8 +10,8 @@
 
 package org.mongeez.reader
 
-import org.springframework.core.io.Resource
+import org.mongeez.data.ChangeSetAndUtilFiles
 
 interface ChangeSetFileProvider {
-    val changeSetFiles: List<Resource>
+    val changeSetFiles: ChangeSetAndUtilFiles
 }
