@@ -8,7 +8,6 @@ import org.mongeez.validation.DefaultChangeSetsValidator
 import org.springframework.core.io.Resource
 
 internal class ChangeSetAndUtilPairProvider {
-    private val readerFactory: ChangeSetReaderFactory by lazy { ChangeSetReaderFactory.getInstance() }
     lateinit var changeSetFileProvider: ChangeSetFileProvider
     var changeSetsValidator: ChangeSetsValidator = DefaultChangeSetsValidator()
 
@@ -21,7 +20,7 @@ internal class ChangeSetAndUtilPairProvider {
 
     private fun List<Resource>.getChangeSets(): List<ChangeSet> {
         return asSequence()
-                .mapNotNull { readerFactory.getChangeSetReader(it)?.getChangeSets(it) }
+                .mapNotNull { ChangeSetReaderFactory.getChangeSetReader(it)?.getChangeSets(it) }
                 .flatten().toList()
                 .also {
                     ChangeSetLogger.log(it)
@@ -31,7 +30,7 @@ internal class ChangeSetAndUtilPairProvider {
 
     private fun Resource?.getChangeSet(): ChangeSet? {
         return this
-                ?.let { readerFactory.getChangeSetReader(it)?.getChangeSets(it) }
+                ?.let { ChangeSetReaderFactory.getChangeSetReader(it)?.getChangeSets(it) }
                 ?.single()
     }
 }

@@ -19,9 +19,7 @@ object ChangeSetLogger {
         if (changeSet.getContexts().isNotEmpty()) {
             logger.trace("contexts: {}", changeSet.getContexts())
         }
-        changeSet.getCommands().forEach { command ->
-            logger.trace("script")
-            logger.trace(command.body)
-        }
+        logger.trace("script")
+        logger.trace(changeSet.getMergedScript().body)
     }
 }

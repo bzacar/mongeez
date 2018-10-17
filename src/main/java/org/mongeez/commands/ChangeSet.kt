@@ -36,6 +36,10 @@ class ChangeSet {
         return commands
     }
 
+    fun getMergedScript(): Script {
+        return Script(commands.joinToString("\n") { it.body })
+    }
+
     fun getContexts(): String {
         return getContextStr()
     }

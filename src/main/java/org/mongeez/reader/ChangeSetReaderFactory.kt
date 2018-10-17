@@ -12,22 +12,11 @@ package org.mongeez.reader
 
 import org.springframework.core.io.Resource
 
-class ChangeSetReaderFactory
-private constructor() {
-    private val readers = listOf(FormattedJavascriptChangeSetReader(), XmlChangeSetReader())
+object ChangeSetReaderFactory {
+    private val readers: List<ChangeSetReader>
+            by lazy { listOf(FormattedJavascriptChangeSetReader(), XmlChangeSetReader()) }
 
     fun getChangeSetReader(file: Resource): ChangeSetReader? {
         return readers.find { it.supports(file) }
-    }
-
-    companion object {
-        private val INSTANCE: ChangeSetReaderFactory by lazy {
-            ChangeSetReaderFactory()
-        }
-
-        @Synchronized
-        fun getInstance(): ChangeSetReaderFactory {
-            return INSTANCE
-        }
     }
 }
