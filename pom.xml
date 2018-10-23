@@ -9,9 +9,13 @@
   </parent>
 
   <groupId>org.mongeez</groupId>
-  <artifactId>mongeez</artifactId>
+  <artifactId>mongeez-parent</artifactId>
   <version>0.9.7-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
+  <modules>
+    <module>mongeez</module>
+    <module>cli</module>
+  </modules>
 
   <name>Mongeez</name>
   <description>An opensource project for mongodb change management</description>
@@ -57,62 +61,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-digester3</artifactId>
-      <version>3.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mongodb</groupId>
-      <artifactId>mongo-java-driver</artifactId>
-      <version>3.8.0</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-      <version>4.1.6.RELEASE</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.3.2</version>
-    </dependency>
-
-    <!-- logging -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.11</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.11</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- /logging -->
-
-    <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib-jdk8</artifactId>
       <version>${kotlin.version}</version>
     </dependency>
-
-    <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>6.8</version>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
   <build>
@@ -130,7 +82,7 @@
             </goals>
             <configuration>
               <sourceDirs>
-                <sourceDir>src/main/java</sourceDir>
+                <sourceDir>src/main/kotlin</sourceDir>
               </sourceDirs>
             </configuration>
           </execution>
@@ -142,7 +94,7 @@
             </goals>
             <configuration>
               <sourceDirs>
-                <sourceDir>src/test/java</sourceDir>
+                <sourceDir>src/test/kotlin</sourceDir>
               </sourceDirs>
             </configuration>
           </execution>

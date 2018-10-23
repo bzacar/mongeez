@@ -69,5 +69,5 @@ class ChangeSet {
 
     private fun getContextStr() = contextsStr ?: ""
 
-    private fun getContextsSet() = contexts ?: emptySet()
+    private fun getContextsSet() = contexts.orEmpty()
 }

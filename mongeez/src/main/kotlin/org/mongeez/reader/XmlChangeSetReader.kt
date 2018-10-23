@@ -49,7 +49,7 @@ internal constructor() : ChangeSetReader {
     private fun getChangeSetsList(file: Resource): List<ChangeSet> {
         try {
             val changeFileSet = digester.parse<Any>(file.inputStream) as? ChangeSetList
-            return changeFileSet?.list ?: emptyList<ChangeSet>().also {
+            return changeFileSet?.list.orEmpty().also {
                 logger.warn("Ignoring change file {}, the parser returned null. Please check your formatting.", file.filename)
             }
         } catch (e: IOException) {
