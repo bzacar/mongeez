@@ -16,25 +16,25 @@ import org.mongeez.commands.ChangeSet
 
 enum class ChangeSetAttribute(val dbFieldName: String) {
     FILE("file") {
-        override fun getAttributeValue(changeSet: ChangeSet): String {
+        override fun getAttributeValue(changeSet: ChangeSet): String? {
             return changeSet.file
         }
     },
     CHANGE_ID("changeId") {
-        override fun getAttributeValue(changeSet: ChangeSet): String {
+        override fun getAttributeValue(changeSet: ChangeSet): String? {
             return changeSet.changeId
         }
     },
     AUTHOR("author") {
-        override fun getAttributeValue(changeSet: ChangeSet): String {
+        override fun getAttributeValue(changeSet: ChangeSet): String? {
             return changeSet.author
         }
     },
     RESOURCE_PATH("resourcePath") {
-        override fun getAttributeValue(changeSet: ChangeSet): String {
+        override fun getAttributeValue(changeSet: ChangeSet): String? {
             return changeSet.resourcePath
         }
     };
 
-    internal abstract fun getAttributeValue(changeSet: ChangeSet): String
+    internal abstract fun getAttributeValue(changeSet: ChangeSet): String?
 }

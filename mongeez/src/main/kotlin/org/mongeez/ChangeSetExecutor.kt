@@ -19,6 +19,7 @@ constructor(serverAddress: ServerAddress,
             changeSet.getMergedScript().run(dao, utilScript)
         } catch (e: RuntimeException) {
             if (changeSet.isFailOnError) {
+                logger.error(e.message)
                 throw e
             }
             logger.warn("ChangeSet " + changeSet.changeId + " has failed, but failOnError is set to false", e.message)

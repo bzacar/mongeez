@@ -14,13 +14,16 @@ package org.mongeez.reader
 
 import org.mongeez.commands.ChangeSet
 import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 
 internal object ChangeSetReaderUtil {
     fun populateChangeSetResourceInfo(changeSet: ChangeSet, file: Resource) {
         changeSet.file = file.filename
-        if (file is ClassPathResource) {
-            changeSet.resourcePath = file.path
+        changeSet.resourcePath = when (file) {
+            is ClassPathResource -> file.path
+            is FileSystemResource -> file.path
+            else -> null
         }
     }
 }
