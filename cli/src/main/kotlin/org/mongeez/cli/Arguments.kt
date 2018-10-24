@@ -15,11 +15,13 @@ internal class Arguments {
     var authenticationEnabled = true
     @Parameter(names = ["-ad", "--authenticationDatabase"], description = "Name of the authentication database", order = 5)
     var authenticationDatabase = "admin"
-    @Parameter(names = ["-s", "--useMongoShell"], arity = 1, description = "Option to use mongo shell or 'db.eval' to execute change sets", order = 6)
+    @Parameter(names = ["-ctx", "--context"], description = "Context of the change sets to be run", order = 6)
+    var context: String? = null
+    @Parameter(names = ["-s", "--useMongoShell"], arity = 1, description = "Option to use mongo shell or 'db.eval' to execute change sets", order = 7)
     var useMongoShell = true
-    @Parameter(names = ["--help"], description = "Displays the options for the application", help = true, order = 7)
+    @Parameter(names = ["--help"], description = "Displays the options for the application", help = true, order = 8)
     var help = false
-    @Parameter(names = ["--debug"], description = "Changes the log level to debug", order = 8)
+    @Parameter(names = ["--debug"], description = "Changes the log level to debug", order = 9)
     var debug = false
 
     override fun toString(): String {
@@ -30,6 +32,7 @@ internal class Arguments {
                 "databaseName" to databaseName,
                 "authenticationEnabled" to authenticationEnabled,
                 "authenticationDatabase" to authenticationDatabase,
+                "context" to context,
                 "useMongoShell" to useMongoShell,
                 "help" to help,
                 "debug" to debug

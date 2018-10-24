@@ -21,6 +21,7 @@ internal object MongeezRunner {
                 val password = console.readPassword()
                 setAuth(MongoAuth(userName, password, arguments.authenticationDatabase))
             }
+            arguments.context?.also { setContext(it) }
         }.process()
     }
 }
