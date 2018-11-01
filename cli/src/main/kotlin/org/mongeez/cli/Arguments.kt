@@ -1,6 +1,7 @@
 package org.mongeez.cli
 
 import com.beust.jcommander.Parameter
+import org.mongeez.MongoAuth
 
 internal class Arguments {
     @Parameter(names = ["-c", "--changeSetListFile"], description = "Path of the file that contains descriptions of changeset files", order = 0)
@@ -15,14 +16,39 @@ internal class Arguments {
     var authenticationEnabled = true
     @Parameter(names = ["-ad", "--authenticationDatabase"], description = "Name of the authentication database", order = 5)
     var authenticationDatabase = "admin"
-    @Parameter(names = ["-ctx", "--context"], description = "Context of the change sets to be run", order = 6)
+    @Parameter(names = ["-u", "--userName"], description = "Name of the user to authenticate to database (should not be used unless parameters are passed by properties file)", order = 6)
+    var userName: String? = null
+    @Parameter(names = ["-pw", "--password"], description = "Password of the user (should not be used unless parameters are passed by properties file)", order = 7)
+    var password: String? = null
+    @Parameter(names = ["-ctx", "--context"], description = "Context of the change sets to be run", order = 8)
     var context: String? = null
-    @Parameter(names = ["-s", "--useMongoShell"], arity = 1, description = "Option to use mongo shell or 'db.eval' to execute change sets", order = 7)
+    @Parameter(names = ["-s", "--useMongoShell"], arity = 1, description = "Option to use mongo shell or 'db.eval' to execute change sets", order = 9)
     var useMongoShell = true
-    @Parameter(names = ["--help"], description = "Displays the options for the application", help = true, order = 8)
+    @Parameter(names = ["--dryRun"], description = "Sets the option to dry run change sets (lists all change sets that would be executed and the last executed changeset)", order = 10)
+    var dryRun = false
+    @Parameter(names = ["--help"], description = "Displays the options for the application", help = true, order = 11)
     var help = false
-    @Parameter(names = ["--debug"], description = "Changes the log level to debug", order = 9)
+    @Parameter(names = ["--debug"], description = "Changes the log level to debug", order = 12)
     var debug = false
+    @Parameter(names = ["--log"], description = "Adds a console log appender", order = 13)
+    var logConsole = false
+    private val console = System.console()
+
+    fun getMongoAuth(): MongoAuth? {
+        return if (authenticationEnabled) {
+            val userName = userName ?: run {
+                print("Please enter user name: ")
+                console.readLine().trim()
+            }
+            val password = password?.toCharArray() ?: run {
+                print("Please enter password:  ")
+                console.readPassword()
+            }
+            MongoAuth(userName, password, authenticationDatabase)
+        } else {
+            null
+        }
+    }
 
     override fun toString(): String {
         return mapOf(
@@ -32,10 +58,14 @@ internal class Arguments {
                 "databaseName" to databaseName,
                 "authenticationEnabled" to authenticationEnabled,
                 "authenticationDatabase" to authenticationDatabase,
+                "userName" to userName,
+                "password" to password,
                 "context" to context,
                 "useMongoShell" to useMongoShell,
+                "dryRun" to dryRun,
                 "help" to help,
-                "debug" to debug
+                "debug" to debug,
+                "logConsole" to logConsole
         ).toString()
     }
 }

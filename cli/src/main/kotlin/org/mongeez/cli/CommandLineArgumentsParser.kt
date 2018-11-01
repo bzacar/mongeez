@@ -12,6 +12,9 @@ internal class CommandLineArgumentsParser {
     fun parse(commandLineArguments: Array<String>): Arguments {
         try {
             jCommander.parse(*commandLineArguments)
+            getParametersFileDirectory(commandLineArguments)?.also { rootDirectory ->
+                arguments.changeSetListFile = "$rootDirectory/${arguments.changeSetListFile}"
+            }
         } catch (e: RuntimeException) {
             println("ERROR: ${e.message}")
             println()
@@ -23,5 +26,13 @@ internal class CommandLineArgumentsParser {
 
     fun usage() {
         jCommander.usage()
+    }
+
+    private fun getParametersFileDirectory(commandLineArguments: Array<String>): String? {
+        return commandLineArguments
+                .singleOrNull()
+                ?.takeIf { it.startsWith("@") }
+                ?.substring(1)
+                ?.substringBeforeLast('/',".")
     }
 }

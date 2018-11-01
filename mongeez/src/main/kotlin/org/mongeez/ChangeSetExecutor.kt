@@ -28,4 +28,6 @@ constructor(serverAddress: ServerAddress,
     }
 
     fun notExecuted(changeSet: ChangeSet) = !dao.wasExecuted(changeSet)
+
+    fun getLastExecutedChangeSet() = dao.getLastExecutedChangeSet()
 }

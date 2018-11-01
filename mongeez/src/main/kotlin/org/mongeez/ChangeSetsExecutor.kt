@@ -4,7 +4,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at  http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
  * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
@@ -22,11 +22,7 @@ constructor(private val context: String?,
             private val changeSetExecutor: ChangeSetExecutor) {
 
     fun execute(changeSets: ChangeSetAndUtilPair) {
-        changeSets.changeSets.asSequence()
-                .filterElse({ it.canBeAppliedInContext(context) })
-                { logger.info("Not executing Changeset {} it cannot run in the context {}", it.changeId, context) }
-                .filterElse({ it.isRunAlways || changeSetExecutor.notExecuted(it) })
-                { logger.info("ChangeSet already executed: " + it.changeId) }
+        getExecutableChangeSets(changeSets)
                 .forEach { changeSet ->
                     if (changeSet.useUtil)
                         changeSetExecutor.execute(changeSet, changeSets.utilScript)
@@ -34,6 +30,19 @@ constructor(private val context: String?,
                         changeSetExecutor.execute(changeSet)
                     logger.info("ChangeSet " + changeSet.changeId + " has been executed")
                 }
+    }
+
+    fun getExecutables(changeSets: ChangeSetAndUtilPair): Pair<String?, List<String>> {
+        return changeSetExecutor.getLastExecutedChangeSet()?.summary() to
+                getExecutableChangeSets(changeSets).map { it.summary() }.toList()
+    }
+
+    private fun getExecutableChangeSets(changeSets: ChangeSetAndUtilPair): Sequence<ChangeSet> {
+        return changeSets.changeSets.asSequence()
+                .filterElse({ it.canBeAppliedInContext(context) })
+                { logger.info("Not executing Changeset {} it cannot run in the context {}", it.changeId, context) }
+                .filterElse({ it.isRunAlways || changeSetExecutor.notExecuted(it) })
+                { logger.info("ChangeSet already executed: " + it.changeId) }
     }
 
     internal companion object {

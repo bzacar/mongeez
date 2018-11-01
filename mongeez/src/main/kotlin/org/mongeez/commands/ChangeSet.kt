@@ -67,6 +67,8 @@ class ChangeSet {
         return getContextsSet().isEmpty() || context != null && getContextsSet().contains(context.toLowerCase().trim())
     }
 
+    fun summary(): String = "$author:$changeId:${resourcePath ?: file}"
+
     private fun getContextStr() = contextsStr ?: ""
 
     private fun getContextsSet() = contexts.orEmpty()

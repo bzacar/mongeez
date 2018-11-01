@@ -14,10 +14,12 @@ package org.mongeez.dao
 
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
-import org.apache.commons.lang3.time.DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT
+import com.mongodb.client.model.Filters.exists
+import com.mongodb.client.model.Sorts.descending
 import org.bson.Document
 import org.mongeez.commands.ChangeSet
 import org.mongeez.dao.shell.MongoShellRunner
+import java.util.Date
 
 class MongeezDao
 internal constructor(private val db: MongoDatabase,
@@ -50,8 +52,23 @@ internal constructor(private val db: MongoDatabase,
         for (attribute in changeSetAttributes) {
             dbObject.append(attribute.dbFieldName, attribute.getAttributeValue(changeSet))
         }
-        dbObject.append("date", ISO_DATETIME_TIME_ZONE_FORMAT.format(System.currentTimeMillis()))
+        dbObject.append("date", Date())
         mongeezCollection.insertOne(dbObject)
+    }
+
+    fun getLastExecutedChangeSet(): ChangeSet? {
+        return mongeezCollection
+                .find(exists("date"))
+                .sort(descending("date"))
+                .firstOrNull()
+                ?.let { changeSetDocument ->
+                    ChangeSet().apply {
+                        changeId = changeSetDocument.getString(ChangeSetAttribute.CHANGE_ID.dbFieldName)
+                        author = changeSetDocument.getString(ChangeSetAttribute.AUTHOR.dbFieldName)
+                        file = changeSetDocument.getString(ChangeSetAttribute.FILE.dbFieldName)
+                        resourcePath = changeSetDocument[ChangeSetAttribute.RESOURCE_PATH.dbFieldName] as? String?
+                    }
+                }
     }
 
     private companion object {

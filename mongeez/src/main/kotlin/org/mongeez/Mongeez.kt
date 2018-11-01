@@ -29,8 +29,12 @@ class Mongeez {
 
     fun process() {
         val changeSets = changeSetAndUtilPairProvider.get()
-        val changeSetExecutor = ChangeSetExecutor(serverAddress, dbName, auth, useMongoShell)
-        ChangeSetsExecutor(context, changeSetExecutor).execute(changeSets)
+        getChangeSetsExecutor().execute(changeSets)
+    }
+
+    fun dryRun(): Pair<String?, List<String>> {
+        val changeSets = changeSetAndUtilPairProvider.get()
+        return getChangeSetsExecutor().getExecutables(changeSets)
     }
 
     fun setServerAddress(serverAddress: ServerAddress) {
@@ -66,5 +70,10 @@ class Mongeez {
 
     fun setUseMongoShell(useMongoShell: Boolean) {
         this.useMongoShell = useMongoShell
+    }
+
+    private fun getChangeSetsExecutor(): ChangeSetsExecutor {
+        val changeSetExecutor = ChangeSetExecutor(serverAddress, dbName, auth, useMongoShell)
+        return ChangeSetsExecutor(context, changeSetExecutor)
     }
 }

@@ -24,7 +24,7 @@ internal class FormattedJavascriptLinesToChangeSetListConverter {
         val script = scriptBody.toString().trim()
                 .takeIf { it.isNotEmpty() }
                 ?.let { Script(it) }
-                ?: throw ParseException("No JavaScript found for changeset $author:$changeId", -1)
+                ?: throw ParseException("No JavaScript found for changeset ${summary()}", -1)
         add(script)
     }
 }
