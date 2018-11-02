@@ -10,7 +10,7 @@
 
   <groupId>com.github.bzacar</groupId>
   <artifactId>mongeez-parent</artifactId>
-  <version>0.9.7-bzacar</version>
+  <version>0.9.7-bzacar-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
     <module>mongeez</module>
