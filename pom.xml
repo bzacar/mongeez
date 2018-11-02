@@ -8,9 +8,9 @@
     <version>7</version>
   </parent>
 
-  <groupId>com.github.bzacar.org.mongeez</groupId>
+  <groupId>com.github.bzacar</groupId>
   <artifactId>mongeez-parent</artifactId>
-  <version>0.9.8-bzacar-SNAPSHOT</version>
+  <version>0.9.7-bzacar</version>
   <packaging>pom</packaging>
   <modules>
     <module>mongeez</module>
@@ -18,8 +18,8 @@
   </modules>
 
   <name>Mongeez</name>
-  <description>An opensource project for mongodb change management</description>
-  <url>http://github.com/secondmarket/mongeez</url>
+  <description>FORK - An opensource project for mongodb change management</description>
+  <url>http://github.com/bzacar/mongeez</url>
 
   <licenses>
     <license>
@@ -30,9 +30,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:secondmarket/mongeez.git</connection>
-    <developerConnection>scm:git:git@github.com:secondmarket/mongeez.git</developerConnection>
-    <url>git@github.com:secondmarket/mongeez.git</url>
+    <connection>scm:git:git@github.com:bzacar/mongeez.git</connection>
+    <developerConnection>scm:git:git@github.com:bzacar/mongeez.git</developerConnection>
+    <url>git@github.com:bzacar/mongeez.git</url>
   </scm>
 
   <developers>

@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.github.bzacar.org.mongeez</groupId>
+    <groupId>com.github.bzacar</groupId>
     <artifactId>mongeez-parent</artifactId>
-    <version>0.9.8-bzacar-SNAPSHOT</version>
+    <version>0.9.7-bzacar</version>
   </parent>
 
   <artifactId>mongeez</artifactId>
