@@ -36,7 +36,7 @@ private fun ch.qos.logback.classic.Logger.createConsoleLogAppender(): ConsoleApp
         name = "CONSOLE"
         encoder = PatternLayoutEncoder().apply {
             context = loggerContext
-            pattern = "[%-5level] %msg%n"
+            pattern = "[%-5level] %logger{36} - %msg%n"
             start()
         }
         start()

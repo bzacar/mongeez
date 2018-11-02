@@ -1,6 +1,8 @@
 package org.mongeez.cli
 
 import com.beust.jcommander.JCommander
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 internal class CommandLineArgumentsParser {
     private val arguments = Arguments()
@@ -16,10 +18,9 @@ internal class CommandLineArgumentsParser {
                 arguments.changeSetListFile = "$rootDirectory/${arguments.changeSetListFile}"
             }
         } catch (e: RuntimeException) {
-            println("ERROR: ${e.message}")
-            println()
+            LOGGER.error(e.message)
             jCommander.usage()
-            throw e
+            System.exit(-1)
         }
         return arguments
     }
@@ -33,6 +34,10 @@ internal class CommandLineArgumentsParser {
                 .singleOrNull()
                 ?.takeIf { it.startsWith("@") }
                 ?.substring(1)
-                ?.substringBeforeLast('/',".")
+                ?.substringBeforeLast('/', ".")
+    }
+
+    private companion object {
+        val LOGGER: Logger = LoggerFactory.getLogger(CommandLineArgumentsParser::class.java)
     }
 }

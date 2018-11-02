@@ -37,12 +37,12 @@ internal class Arguments {
     fun getMongoAuth(): MongoAuth? {
         return if (authenticationEnabled) {
             val userName = userName ?: run {
-                print("Please enter user name: ")
-                console.readLine().trim()
+                println("Please enter user name: ")
+                console?.readLine()?.trim() ?: throw IllegalStateException("Console not available to read user name!")
             }
             val password = password?.toCharArray() ?: run {
-                print("Please enter password:  ")
-                console.readPassword()
+                println("Please enter password:  ")
+                console?.readPassword() ?: throw IllegalStateException("Console not available to read password!")
             }
             MongoAuth(userName, password, authenticationDatabase)
         } else {
