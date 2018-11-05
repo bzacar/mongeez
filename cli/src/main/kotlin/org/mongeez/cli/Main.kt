@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory
 
 internal const val PROGRAM_NAME = "mongeez-cli"
 
+/**
+ * Main method of the CLI tool
+ * @param args String[]: Command line arguments
+ */
 fun main(args: Array<String>) {
     val parser = CommandLineArgumentsParser()
     val arguments = parser.parse(args)

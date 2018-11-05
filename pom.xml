@@ -10,7 +10,7 @@
 
   <groupId>com.github.bzacar</groupId>
   <artifactId>mongeez-parent</artifactId>
-  <version>0.9.7-bzacar-SNAPSHOT</version>
+  <version>0.9.8-bzacar-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
     <module>mongeez</module>
@@ -54,10 +54,87 @@
     </developer>
   </developers>
 
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
   <properties>
     <java.version>1.8</java.version>
     <kotlin.version>1.2.70</kotlin.version>
     <logback.version>1.2.3</logback.version>
     <slf4j.version>1.7.11</slf4j.version>
+    <dokka.version>0.9.9</dokka.version>
   </properties>
+
+  <profiles>
+    <profile>
+      <!--To release:
+      mvn clean deploy -DperformRelease-->
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.2.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.jetbrains.dokka</groupId>
+            <artifactId>dokka-maven-plugin</artifactId>
+            <version>${dokka.version}</version>
+            <executions>
+              <execution>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>dokka</goal>
+                  <goal>javadoc</goal>
+                  <goal>javadocJar</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <includes>
+                <file>packages.md</file>
+              </includes>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
