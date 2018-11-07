@@ -1,7 +1,7 @@
 <mongoChangeLog>
   <changeSet changeId="ChangeSet-Using-Util" author="bzacar" useUtil="true">
     <script>
-      addUUIDIdsAndInsert("users", [
+      addNuanceAndInsert("users", [
       {"name": "John", "surname": "Doe"},
       {"name": "Jane", "surname": "Doe"}
       ]);

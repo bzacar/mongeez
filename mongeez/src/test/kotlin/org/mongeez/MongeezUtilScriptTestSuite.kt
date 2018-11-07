@@ -30,7 +30,7 @@ class MongeezUtilScriptTestSuite(private val create: (String) -> Mongeez) {
     fun testUtilFunctionalityWhenUtilFlagIsNotSet(cause: Class<out Throwable>) {
         assertThatThrownBy { create("mongeez_without_util_flag.xml").process() }
                 .isInstanceOf(MongeezDaoException::class.java)
-                .hasMessageContaining("addUUIDIdsAndInsert is not defined")
+                .hasMessageContaining("addNuanceAndInsert is not defined")
                 .hasCauseInstanceOf(cause)
     }
 }
