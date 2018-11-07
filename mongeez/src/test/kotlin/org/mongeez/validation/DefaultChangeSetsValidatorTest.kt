@@ -1,55 +1,33 @@
 package org.mongeez.validation
 
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Test
 import org.mongeez.commands.ChangeSet
-import org.testng.annotations.Test
 
 class DefaultChangeSetsValidatorTest {
-
-    @Test(expectedExceptions = [ValidationException::class])
+    @Test
     fun testDetectDuplicateFirstHalf() {
         val validator = DefaultChangeSetsValidator()
-        val changeSets = listOf(makeChangeSet("1"),
-                makeChangeSet("10"),
-                makeChangeSet("3"),
-                makeChangeSet("4"),
-                makeChangeSet("5"),
-                makeChangeSet("6"),
-                makeChangeSet("7"),
-                makeChangeSet("8"),
-                makeChangeSet("9"),
-                makeChangeSet("10"))
-        validator.validate(changeSets)
+        val changeSets = listOf("1", "10", "3", "4", "5", "6", "7", "8", "9", "10")
+                .map(::makeChangeSet)
+        assertThatThrownBy { validator.validate(changeSets) }
+                .isInstanceOf(ValidationException::class.java)
     }
 
-    @Test(expectedExceptions = [ValidationException::class])
+    @Test
     fun testDetectDuplicateSecondHalf() {
         val validator = DefaultChangeSetsValidator()
-        val changeSets = listOf(makeChangeSet("1"),
-                makeChangeSet("2"),
-                makeChangeSet("3"),
-                makeChangeSet("4"),
-                makeChangeSet("5"),
-                makeChangeSet("6"),
-                makeChangeSet("7"),
-                makeChangeSet("8"),
-                makeChangeSet("10"),
-                makeChangeSet("10"))
-        validator.validate(changeSets)
+        val changeSets = listOf("1", "2", "3", "4", "5", "6", "7", "8", "10", "10")
+                .map(::makeChangeSet)
+        assertThatThrownBy { validator.validate(changeSets) }
+                .isInstanceOf(ValidationException::class.java)
     }
 
     @Test
     fun testValidateNoDuplicates() {
         val validator = DefaultChangeSetsValidator()
-        val changeSets = listOf(makeChangeSet("1"),
-                makeChangeSet("2"),
-                makeChangeSet("3"),
-                makeChangeSet("4"),
-                makeChangeSet("5"),
-                makeChangeSet("6"),
-                makeChangeSet("7"),
-                makeChangeSet("8"),
-                makeChangeSet("9"),
-                makeChangeSet("10"))
+        val changeSets = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+                .map(::makeChangeSet)
         validator.validate(changeSets)
     }
 
@@ -58,5 +36,4 @@ class DefaultChangeSetsValidatorTest {
         changeSet.changeId = id
         return changeSet
     }
-
 }

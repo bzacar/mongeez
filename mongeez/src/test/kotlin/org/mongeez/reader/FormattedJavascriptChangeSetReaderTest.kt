@@ -10,98 +10,112 @@
 
 package org.mongeez.reader
 
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.Assertions.tuple
+import org.junit.jupiter.api.Test
 import org.mongeez.commands.ChangeSet
+import org.mongeez.containsChangeSets
 import org.mongeez.validation.ValidationException
 import org.springframework.core.io.ClassPathResource
-import org.testng.Assert.assertEquals
-import org.testng.Assert.assertTrue
-import org.testng.annotations.Test
+import java.io.FileNotFoundException
 import java.nio.charset.Charset
+import java.text.ParseException
 
+//@Tag("parser")
 class FormattedJavascriptChangeSetReaderTest {
     @Test
     fun testGetChangeSets1() {
         val changeSets = parse("changeset1.js")
-        assertEquals(changeSets.size, 2)
-        assertChangeSetEquals(changeSets[0], "mlysaght", "ChangeSet-1",
-                false, "changeset1.js",
-                "db.organization.insert({\n" +
-                        "    \"Organization\" : \"10Gen\",\n" +
-                        "    \"Location\" : \"NYC\",\n" +
-                        "    DateFounded : {\"Year\" : 2008, \"Month\" : 01, \"day\" :01}\n" +
-                        "});\n" +
-                        "db.organization.insert({\n" +
-                        "    \"Organization\" : \"SecondMarket\",\n" +
-                        "    \"Location\" : \"NYC\",\n" +
-                        "    DateFounded : {\"Year\" : 2004, \"Month\" : 05, \"day\" :04}\n" +
-                        "});")
-        assertChangeSetEquals(changeSets[1], "mlysaght", "ChangeSet-2",
-                false, "changeset1.js",
-                "db.user.insert({ \"Name\" : \"Michael Lysaght\"});\n" + "db.user.insert({ \"Name\" : \"Oleksii Iepishkin\"});")
+        assertThat(changeSets)
+                .hasSize(2)
+                .containsChangeSets(
+                        tuple("mlysaght", "ChangeSet-1", false, "changeset1.js") to
+                                "db.organization.insert({\n" +
+                                "    \"Organization\" : \"10Gen\",\n" +
+                                "    \"Location\" : \"NYC\",\n" +
+                                "    DateFounded : {\"Year\" : 2008, \"Month\" : 01, \"day\" :01}\n" +
+                                "});\n" +
+                                "db.organization.insert({\n" +
+                                "    \"Organization\" : \"SecondMarket\",\n" +
+                                "    \"Location\" : \"NYC\",\n" +
+                                "    DateFounded : {\"Year\" : 2004, \"Month\" : 05, \"day\" :04}\n" +
+                                "});",
+                        tuple("mlysaght", "ChangeSet-2", false, "changeset1.js") to
+                                "db.user.insert({ \"Name\" : \"Michael Lysaght\"});\n" + "db.user.insert({ \"Name\" : \"Oleksii Iepishkin\"});"
+                )
     }
 
     @Test
     fun testGetChangeSets2() {
         val changeSets = parse("changeset2.js")
-        assertEquals(changeSets.size, 2)
-        assertChangeSetEquals(changeSets[0], "someuser", "cs3", true,
-                "changeset2.js",
-                "db.organization.update({Location : \"NYC\"}, {\$set : {Location : \"NY\"}}, false, true);")
-        assertChangeSetEquals(changeSets[1], "someotheruser", "cs4",
-                false, "changeset2.js",
-                "db.organization.find().forEach(function(org) {\n" +
-                        "    var year = org.DateFounded.Year;\n" +
-                        "    var month = org.DateFounded.Month;\n" +
-                        "    var day = org.DateFounded.day;\n" +
-                        "    //Year is minimum required information\n" +
-                        "    if (year != null) {\n" +
-                        "    var date = new Date();\n" +
-                        "    if (month != null) {\n" +
-                        "    if (day != null) {\n" +
-                        "    date.setUTCDate(day);\n" +
-                        "    }\n" +
-                        "date.setMonth(month - 1);\n" +
-                        "}\n" +
-                        "date.setFullYear(year);\n" +
-                        "}\n" +
-                        "if (date != null) {\n" +
-                        "    db.organization.update({Organization : org.Organization}, {\$set : {DateFounded : date}});\n" +
-                        "}\n" +
-                        "else {\n" +
-                        "    db.organization.update({Organization : org.Organization}, {\$unset : {DateFounded : 1 }});\n" +
-                        "}\n" +
-                        "});")
+        assertThat(changeSets)
+                .hasSize(2)
+                .containsChangeSets(
+                        tuple("someuser", "cs3", true, "changeset2.js") to
+                                "db.organization.update({Location : \"NYC\"}, {\$set : {Location : \"NY\"}}, false, true);",
+                        tuple("someotheruser", "cs4", false, "changeset2.js") to
+                                "db.organization.find().forEach(function(org) {\n" +
+                                "    var year = org.DateFounded.Year;\n" +
+                                "    var month = org.DateFounded.Month;\n" +
+                                "    var day = org.DateFounded.day;\n" +
+                                "    //Year is minimum required information\n" +
+                                "    if (year != null) {\n" +
+                                "    var date = new Date();\n" +
+                                "    if (month != null) {\n" +
+                                "    if (day != null) {\n" +
+                                "    date.setUTCDate(day);\n" +
+                                "    }\n" +
+                                "date.setMonth(month - 1);\n" +
+                                "}\n" +
+                                "date.setFullYear(year);\n" +
+                                "}\n" +
+                                "if (date != null) {\n" +
+                                "    db.organization.update({Organization : org.Organization}, {\$set : {DateFounded : date}});\n" +
+                                "}\n" +
+                                "else {\n" +
+                                "    db.organization.update({Organization : org.Organization}, {\$unset : {DateFounded : 1 }});\n" +
+                                "}\n" +
+                                "});"
+                )
     }
 
-    @Test(expectedExceptions = [ValidationException::class])
+    @Test
     fun testGetChangeSetsNoHeader() {
-        parse("changeset_noheader.js")
+        assertThatThrownBy { parse("changeset_noheader.js") }
+                .isInstanceOf(ValidationException::class.java)
+                .hasMessageContaining("changeset_noheader.js did not begin with the expected comment:\n//mongeez formatted javascript")
+                .hasCauseInstanceOf(ParseException::class.java)
     }
 
-    @Test(expectedExceptions = [ValidationException::class])
+    @Test
     fun testGetChangeSetsEmptyScript() {
-        parse("changeset_emptyscript.js")
+        assertThatThrownBy { parse("changeset_emptyscript.js") }
+                .isInstanceOf(ValidationException::class.java)
+                .hasMessageContaining("No JavaScript found for changeset joseph:4:changeset_emptyscript.js")
+                .hasCauseInstanceOf(ParseException::class.java)
     }
 
     @Test
     fun testGetChangeSetsAlternateEncoding() {
-        val changeSets = parse(Charset.forName("Cp1252"), "changeset_Cp1252.js")
-        assertEquals(changeSets.size, 2)
-        assertChangeSetEquals(changeSets[0], "mlysaght", "ChangeSet-1",
-                false, "changeset_Cp1252.js",
-                "db.organization.insert({\n" +
-                        "    \"Organization\" : \"10Gen\",\n" +
-                        "    \"Location\" : \"NYC\",\n" +
-                        "    DateFounded : {\"Year\" : 2008, \"Month\" : 01, \"day\" :01}\n" +
-                        "});\n" +
-                        "db.organization.insert({\n" +
-                        "    \"Organization\" : \"SecondMarket\",\n" +
-                        "    \"Location\" : \"NYC\",\n" +
-                        "    DateFounded : {\"Year\" : 2004, \"Month\" : 05, \"day\" :04}\n" +
-                        "});")
-        assertChangeSetEquals(changeSets[1], "mlysaght", "ChangeSet-2",
-                false, "changeset_Cp1252.js",
-                "db.user.insert({ \"Name\" : \"Michaël Lyságht\"});\n" + "db.user.insert({ \"Name\" : \"Oleksïï Iepishkin\"});")
+        val changeSets = parse("changeset_Cp1252.js", Charset.forName("Cp1252"))
+        assertThat(changeSets)
+                .hasSize(2)
+                .containsChangeSets(
+                        tuple("mlysaght", "ChangeSet-1", false, "changeset_Cp1252.js") to
+                                "db.organization.insert({\n" +
+                                "    \"Organization\" : \"10Gen\",\n" +
+                                "    \"Location\" : \"NYC\",\n" +
+                                "    DateFounded : {\"Year\" : 2008, \"Month\" : 01, \"day\" :01}\n" +
+                                "});\n" +
+                                "db.organization.insert({\n" +
+                                "    \"Organization\" : \"SecondMarket\",\n" +
+                                "    \"Location\" : \"NYC\",\n" +
+                                "    DateFounded : {\"Year\" : 2004, \"Month\" : 05, \"day\" :04}\n" +
+                                "});",
+                        tuple("mlysaght", "ChangeSet-2", false, "changeset_Cp1252.js") to
+                                "db.user.insert({ \"Name\" : \"Michaël Lyságht\"});\n" + "db.user.insert({ \"Name\" : \"Oleksïï Iepishkin\"});"
+                )
     }
 
     /**
@@ -113,63 +127,50 @@ class FormattedJavascriptChangeSetReaderTest {
     @Test
     fun testGetChangeSetsWrongEncoding() {
         val changeSets = parse("changeset_Cp1252.js")
-        assertEquals(changeSets.size, 2)
-        assertChangeSetEquals(changeSets[0], "mlysaght", "ChangeSet-1",
-                false, "changeset_Cp1252.js",
-                "db.organization.insert({\n" +
-                        "    \"Organization\" : \"10Gen\",\n" +
-                        "    \"Location\" : \"NYC\",\n" +
-                        "    DateFounded : {\"Year\" : 2008, \"Month\" : 01, \"day\" :01}\n" +
-                        "});\n" +
-                        "db.organization.insert({\n" +
-                        "    \"Organization\" : \"SecondMarket\",\n" +
-                        "    \"Location\" : \"NYC\",\n" +
-                        "    DateFounded : {\"Year\" : 2004, \"Month\" : 05, \"day\" :04}\n" +
-                        "});")
-        assertChangeSetEquals(changeSets[1], "mlysaght", "ChangeSet-2",
-                false, "changeset_Cp1252.js",
-                "db.user.insert({ \"Name\" : \"Micha�l Lys�ght\"});\n" + "db.user.insert({ \"Name\" : \"Oleks�� Iepishkin\"});")
+        assertThat(changeSets)
+                .hasSize(2)
+                .containsChangeSets(
+                        tuple("mlysaght", "ChangeSet-1", false, "changeset_Cp1252.js") to
+                                "db.organization.insert({\n" +
+                                "    \"Organization\" : \"10Gen\",\n" +
+                                "    \"Location\" : \"NYC\",\n" +
+                                "    DateFounded : {\"Year\" : 2008, \"Month\" : 01, \"day\" :01}\n" +
+                                "});\n" +
+                                "db.organization.insert({\n" +
+                                "    \"Organization\" : \"SecondMarket\",\n" +
+                                "    \"Location\" : \"NYC\",\n" +
+                                "    DateFounded : {\"Year\" : 2004, \"Month\" : 05, \"day\" :04}\n" +
+                                "});",
+                        tuple("mlysaght", "ChangeSet-2", false, "changeset_Cp1252.js") to
+                                "db.user.insert({ \"Name\" : \"Micha�l Lys�ght\"});\n" + "db.user.insert({ \"Name\" : \"Oleks�� Iepishkin\"});"
+                )
     }
 
-    @Test(expectedExceptions = [ValidationException::class])
+    @Test
     fun testGetChangeSetsIOFailure() {
-        parse("changeset_nonexistant.js")
+        assertThatThrownBy { parse("changeset_nonexistant.js") }
+                .isInstanceOf(ValidationException::class.java)
+                .hasMessageContaining("class path resource [org/mongeez/reader/changeset_nonexistant.js] cannot be opened because it does not exist")
+                .hasCauseInstanceOf(FileNotFoundException::class.java)
     }
 
     @Test
     fun testChangeSetWithContexts() {
         val changeSets = parse("changeset_contexts.js")
-        assertEquals(changeSets.size, 5)
-        assertEquals("users", changeSets[0].getContexts())
-
-        assertEquals("users,organizations", changeSets[1].getContexts())
-
-        assertTrue(changeSets[2].isRunAlways)
-        assertEquals("users,organizations", changeSets[2].getContexts())
-
-        assertEquals("users, organizations", changeSets[3].getContexts())
-
-        assertTrue(changeSets[4].isRunAlways)
-        assertEquals("users, organizations", changeSets[4].getContexts())
+        assertThat(changeSets).hasSize(5)
+                .extracting("contexts", "isRunAlways")
+                .containsExactly(
+                        tuple("users", false),
+                        tuple("users,organizations", false),
+                        tuple("users,organizations", true),
+                        tuple("users, organizations", false),
+                        tuple("users, organizations", true))
     }
 
-    private fun parse(fileName: String): List<ChangeSet> {
-        return parse(null, fileName)
-    }
-
-    private fun parse(charset: Charset?, fileName: String): List<ChangeSet> {
+    private fun parse(fileName: String, charset: Charset? = null): List<ChangeSet> {
         val reader = charset?.let { FormattedJavascriptChangeSetReader(it) }
                 ?: FormattedJavascriptChangeSetReader()
         val file = ClassPathResource(fileName, javaClass)
         return reader.getChangeSets(file)
-    }
-
-    private fun assertChangeSetEquals(actual: ChangeSet, expectedAuthor: String, expectedChangeId: String, expectedRunAlways: Boolean, expectedFile: String, expectedBody: String) {
-        assertEquals(actual.author, expectedAuthor)
-        assertEquals(actual.changeId, expectedChangeId)
-        assertEquals(actual.isRunAlways, expectedRunAlways)
-        assertEquals(actual.file, expectedFile)
-        assertEquals(actual.getCommands().size, 1)
-        assertEquals(actual.getCommands()[0].body, expectedBody)
     }
 }

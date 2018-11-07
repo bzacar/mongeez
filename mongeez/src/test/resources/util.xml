@@ -1,0 +1,12 @@
+<mongoChangeLog>
+  <changeSet changeId="Util-ChangeSet" author="bzacar">
+    <script>
+      function addUUIDIdsAndInsert(collection, documents) {
+      for (let i = 0; i &lt; documents.length; i++) {
+      documents[i]["_id"] = UUID();
+      }
+      db.getCollection(collection).insertMany(documents);
+      }
+    </script>
+  </changeSet>
+</mongoChangeLog>

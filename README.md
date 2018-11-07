@@ -12,19 +12,40 @@ Latest release:
 </dependency>
 ```
 
-This fork has four basic differences from the original repository:
-1. All MongoDB java drivers are updated and all deprecated API uses are removed (except for tests).
-2. **useMongoShell option:** This option can be used in order to force the library to use mongo shell to run the
+This fork has five basic differences from the original repository:
+1. All MongoDB java drivers are updated and all deprecated API uses are removed.
+1. **useUtil option**: A new option added to change sets to use util scripts. Util scripts are defined like any
+other change set and in mongeez.xml files they should be defined with util tag (instead of file tag used for 
+normal change sets). Example change set definition to use util script:
+
+   XML:
+   ```xml
+   <changeSet changeId="ChangeSet-Using-Util" author="bzacar" useUtil="true"/>
+   ``` 
+   JS:
+   ```javascript
+   //changeset bzacar:ChangeSet-Using-Util useUtil:true
+   ```
+   Example mongeez.xml which defines util scripts:
+   ```xml
+   <changeFiles>
+     <file path="changeset_using_util.xml"/>
+     <util path="util.xml"/>
+   </changeFiles>
+   ```
+   Change sets which are flagged with useUtil option will be run together with util script. Currently you can only 
+   define one util script change set.
+1. **useMongoShell option:** This option can be used in order to force the library to use mongo shell to run the
 change sets instead of using ```db.eval``` so that you don't need to create a special user in the database to execute
 ```db.eval``` commands. The drawback of this option is that it requires mongo shell to be install on the machine
 that will run the change sets. The option can be activated as ```mongeez.setUseMongoShell(true)```.
-3. **Dry Run option:** You can now execute a dry run with mongeez. To use dry run you need to call
+1. **Dry Run option:** You can now execute a dry run with mongeez. To use dry run you need to call
 ```mongeez.dryRun()``` instead of ```mongeez.process()```. This new methods returns a nullable string and list of
 strings pair. Nullable string part contains summary information about the last change set run on the database. If
 there is no change set run on the database yet that string will be null. The list contains summary information about
 the change sets that would have been run on the database if that was not a dry run. All summary information are in
 the format: ```<author of the change set>:<id if the change set>:<if available resource path of the file otherwise file name>```
-4. **Command line interface tool**: This is explain in following sections, [CLI](#Command-Line-Interface-Tool)
+1. **Command line interface tool**: This is explain in following sections, [CLI](#Command-Line-Interface-Tool)
 
 ### What is mongeez?
 

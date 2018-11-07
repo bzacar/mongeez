@@ -19,6 +19,10 @@
     </license>
   </licenses>
 
+  <properties>
+    <excludedTags>shell</excludedTags>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
@@ -71,12 +75,50 @@
     <!-- /logging -->
 
     <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>6.8</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>${assertj.version}</version>
+    </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>skipDaoTests</id>
+      <activation>
+        <property>
+          <name>skipDbTests</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <properties>
+        <excludedTags>dao,shell</excludedTags>
+      </properties>
+    </profile>
+    <profile>
+      <id>allTests</id>
+      <activation>
+        <property>
+          <name>runAllTests</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <properties>
+        <excludedTags></excludedTags>
+      </properties>
+    </profile>
+  </profiles>
 
   <build>
     <sourceDirectory>src/main/kotlin</sourceDirectory>
@@ -118,6 +160,7 @@
         <version>2.22.1</version>
         <configuration>
           <useSystemClassLoader>false</useSystemClassLoader>
+          <excludedGroups>${excludedTags}</excludedGroups>
         </configuration>
       </plugin>
     </plugins>

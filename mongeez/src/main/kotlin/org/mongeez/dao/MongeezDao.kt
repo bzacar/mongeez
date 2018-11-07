@@ -12,6 +12,7 @@
 
 package org.mongeez.dao
 
+import com.mongodb.MongoCommandException
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters.exists
@@ -19,6 +20,7 @@ import com.mongodb.client.model.Sorts.descending
 import org.bson.Document
 import org.mongeez.commands.ChangeSet
 import org.mongeez.dao.shell.MongoShellRunner
+import org.mongeez.dao.shell.ShellException
 import java.util.Date
 
 class MongeezDao
@@ -39,11 +41,19 @@ internal constructor(private val db: MongoDatabase,
 
     fun runScript(code: String, util: String?) {
         val theCode = util.getTheCode(code)
-        if (useMongoShell) {
-            mongoShellRunner.run(theCode)
-        } else {
-            val command = Document("eval", theCode)
-            db.runCommand(command)
+        try {
+            if (useMongoShell) {
+                mongoShellRunner.run(theCode)
+            } else {
+                val command = Document("eval", theCode)
+                db.runCommand(command)
+            }
+        } catch (ex: RuntimeException) {
+            if (ex is MongoCommandException || ex is ShellException) {
+                throw MongeezDaoException(ex)
+            } else {
+                throw ex
+            }
         }
     }
 
