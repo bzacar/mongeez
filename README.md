@@ -86,7 +86,7 @@ Hopefully this thing is routinely green. Travis-CI monitors new code to this pro
 ### Command Line Interface Tool
 This fork also includes a command line interface tool which uses mongeez to execute change sets on the database.
 You can download the tarball from maven repository with this
-[link](https://search.maven.org/remotecontent?filepath=com/github/bzacar/mongeez-cli/0.9.7-bzacar/mongeez-cli-0.9.7-bzacar-dist.tar.gz).
+[link](https://oss.sonatype.org/content/repositories/releases/com/github/bzacar/mongeez-cli/0.9.8-bzacar/mongeez-cli-0.9.8-bzacar-dist.tar.gz).
 
 You can also add it as a dependency to your projects:
 ```xml
