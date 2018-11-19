@@ -25,7 +25,8 @@ fun main(args: Array<String>) {
 }
 
 private fun setUpLogConfiguration(arguments: Arguments) {
-    val rootLogger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger
+    val rootLogger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as? ch.qos.logback.classic.Logger
+            ?: throw IllegalStateException("Unexpected type of logger!")
     if (arguments.debug) {
         rootLogger.level = Level.DEBUG
     }

@@ -22,39 +22,28 @@ import java.io.FileNotFoundException
 import java.nio.charset.Charset
 import java.text.ParseException
 
-//@Tag("parser")
 class FormattedJavascriptChangeSetReaderTest {
     @Test
     fun testGetChangeSets1() {
-        val changeSets = parse("changeset1.js")
+        val changeSets = parse(CHANGE_SET_FILE_1)
         assertThat(changeSets)
                 .hasSize(2)
                 .containsChangeSets(
-                        tuple("mlysaght", "ChangeSet-1", false, "changeset1.js") to
-                                "db.organization.insert({\n" +
-                                "    \"Organization\" : \"10Gen\",\n" +
-                                "    \"Location\" : \"NYC\",\n" +
-                                "    DateFounded : {\"Year\" : 2008, \"Month\" : 01, \"day\" :01}\n" +
-                                "});\n" +
-                                "db.organization.insert({\n" +
-                                "    \"Organization\" : \"SecondMarket\",\n" +
-                                "    \"Location\" : \"NYC\",\n" +
-                                "    DateFounded : {\"Year\" : 2004, \"Month\" : 05, \"day\" :04}\n" +
-                                "});",
-                        tuple("mlysaght", "ChangeSet-2", false, "changeset1.js") to
+                        tuple(AUTHOR_MLYSAGHT, CHANGE_SET_ID_1, false, CHANGE_SET_FILE_1) to CHANGE_SET_1,
+                        tuple(AUTHOR_MLYSAGHT, CHANGE_SET_ID_2, false, CHANGE_SET_FILE_1) to
                                 "db.user.insert({ \"Name\" : \"Michael Lysaght\"});\n" + "db.user.insert({ \"Name\" : \"Oleksii Iepishkin\"});"
                 )
     }
 
     @Test
     fun testGetChangeSets2() {
-        val changeSets = parse("changeset2.js")
+        val changeSets = parse(CHANGE_SET_FILE_2)
         assertThat(changeSets)
                 .hasSize(2)
                 .containsChangeSets(
-                        tuple("someuser", "cs3", true, "changeset2.js") to
+                        tuple("someuser", "cs3", true, CHANGE_SET_FILE_2) to
                                 "db.organization.update({Location : \"NYC\"}, {\$set : {Location : \"NY\"}}, false, true);",
-                        tuple("someotheruser", "cs4", false, "changeset2.js") to
+                        tuple("someotheruser", "cs4", false, CHANGE_SET_FILE_2) to
                                 "db.organization.find().forEach(function(org) {\n" +
                                 "    var year = org.DateFounded.Year;\n" +
                                 "    var month = org.DateFounded.Month;\n" +
@@ -98,22 +87,12 @@ class FormattedJavascriptChangeSetReaderTest {
 
     @Test
     fun testGetChangeSetsAlternateEncoding() {
-        val changeSets = parse("changeset_Cp1252.js", Charset.forName("Cp1252"))
+        val changeSets = parse(CHANGE_SET_FILE_ALTERNATE_ENCODING, Charset.forName("Cp1252"))
         assertThat(changeSets)
                 .hasSize(2)
                 .containsChangeSets(
-                        tuple("mlysaght", "ChangeSet-1", false, "changeset_Cp1252.js") to
-                                "db.organization.insert({\n" +
-                                "    \"Organization\" : \"10Gen\",\n" +
-                                "    \"Location\" : \"NYC\",\n" +
-                                "    DateFounded : {\"Year\" : 2008, \"Month\" : 01, \"day\" :01}\n" +
-                                "});\n" +
-                                "db.organization.insert({\n" +
-                                "    \"Organization\" : \"SecondMarket\",\n" +
-                                "    \"Location\" : \"NYC\",\n" +
-                                "    DateFounded : {\"Year\" : 2004, \"Month\" : 05, \"day\" :04}\n" +
-                                "});",
-                        tuple("mlysaght", "ChangeSet-2", false, "changeset_Cp1252.js") to
+                        tuple(AUTHOR_MLYSAGHT, CHANGE_SET_ID_1, false, CHANGE_SET_FILE_ALTERNATE_ENCODING) to CHANGE_SET_1,
+                        tuple(AUTHOR_MLYSAGHT, CHANGE_SET_ID_2, false, CHANGE_SET_FILE_ALTERNATE_ENCODING) to
                                 "db.user.insert({ \"Name\" : \"Michaël Lyságht\"});\n" + "db.user.insert({ \"Name\" : \"Oleksïï Iepishkin\"});"
                 )
     }
@@ -126,22 +105,12 @@ class FormattedJavascriptChangeSetReaderTest {
      */
     @Test
     fun testGetChangeSetsWrongEncoding() {
-        val changeSets = parse("changeset_Cp1252.js")
+        val changeSets = parse(CHANGE_SET_FILE_ALTERNATE_ENCODING)
         assertThat(changeSets)
                 .hasSize(2)
                 .containsChangeSets(
-                        tuple("mlysaght", "ChangeSet-1", false, "changeset_Cp1252.js") to
-                                "db.organization.insert({\n" +
-                                "    \"Organization\" : \"10Gen\",\n" +
-                                "    \"Location\" : \"NYC\",\n" +
-                                "    DateFounded : {\"Year\" : 2008, \"Month\" : 01, \"day\" :01}\n" +
-                                "});\n" +
-                                "db.organization.insert({\n" +
-                                "    \"Organization\" : \"SecondMarket\",\n" +
-                                "    \"Location\" : \"NYC\",\n" +
-                                "    DateFounded : {\"Year\" : 2004, \"Month\" : 05, \"day\" :04}\n" +
-                                "});",
-                        tuple("mlysaght", "ChangeSet-2", false, "changeset_Cp1252.js") to
+                        tuple(AUTHOR_MLYSAGHT, CHANGE_SET_ID_1, false, CHANGE_SET_FILE_ALTERNATE_ENCODING) to CHANGE_SET_1,
+                        tuple(AUTHOR_MLYSAGHT, CHANGE_SET_ID_2, false, CHANGE_SET_FILE_ALTERNATE_ENCODING) to
                                 "db.user.insert({ \"Name\" : \"Micha�l Lys�ght\"});\n" + "db.user.insert({ \"Name\" : \"Oleks�� Iepishkin\"});"
                 )
     }
@@ -172,5 +141,24 @@ class FormattedJavascriptChangeSetReaderTest {
                 ?: FormattedJavascriptChangeSetReader()
         val file = ClassPathResource(fileName, javaClass)
         return reader.getChangeSets(file)
+    }
+
+    private companion object {
+        const val AUTHOR_MLYSAGHT = "mlysaght"
+        const val CHANGE_SET_FILE_1 = "changeset1.js"
+        const val CHANGE_SET_FILE_2 = "changeset2.js"
+        const val CHANGE_SET_FILE_ALTERNATE_ENCODING = "changeset_Cp1252.js"
+        const val CHANGE_SET_ID_1 = "ChangeSet-1"
+        const val CHANGE_SET_ID_2 = "ChangeSet-2"
+        const val CHANGE_SET_1 = "db.organization.insert({\n" +
+                "    \"Organization\" : \"10Gen\",\n" +
+                "    \"Location\" : \"NYC\",\n" +
+                "    DateFounded : {\"Year\" : 2008, \"Month\" : 01, \"day\" :01}\n" +
+                "});\n" +
+                "db.organization.insert({\n" +
+                "    \"Organization\" : \"SecondMarket\",\n" +
+                "    \"Location\" : \"NYC\",\n" +
+                "    DateFounded : {\"Year\" : 2004, \"Month\" : 05, \"day\" :04}\n" +
+                "});"
     }
 }

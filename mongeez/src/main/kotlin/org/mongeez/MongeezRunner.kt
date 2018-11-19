@@ -48,19 +48,15 @@ class MongeezRunner : InitializingBean {
         mongeez.setServerAddress(serverAddress)
         mongeez.setDbName(dbName)
 
-        if (changeSetsValidator != null) {
-            mongeez.setChangeSetsValidator(changeSetsValidator!!)
-        } else {
-            mongeez.setChangeSetsValidator(DefaultChangeSetsValidator())
-        }
+        mongeez.setChangeSetsValidator(changeSetsValidator ?: DefaultChangeSetsValidator())
 
-        if (changeSetFileProvider != null) {
-            mongeez.setChangeSetFileProvider(changeSetFileProvider!!)
-        } else {
-            mongeez.setFile(file!!)
-            if (!userName.isNullOrEmpty() && !passWord.isNullOrEmpty()) {
-                mongeez.setAuth(MongoAuth(userName!!, passWord!!.toCharArray(), authDb))
-            }
+        changeSetFileProvider
+                ?.let { mongeez.setChangeSetFileProvider(it) }
+                ?: file?.let { mongeez.setFile(it) }
+                ?: throw IllegalStateException("Both change set file path and change set file provider cannot be null!")
+
+        if (!userName.isNullOrEmpty() && !passWord.isNullOrEmpty()) {
+            mongeez.setAuth(MongoAuth(userName.orEmpty(), passWord.orEmpty().toCharArray(), authDb))
         }
 
         mongeez.process()

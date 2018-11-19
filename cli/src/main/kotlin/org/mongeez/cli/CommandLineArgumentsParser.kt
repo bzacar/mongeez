@@ -1,6 +1,7 @@
 package org.mongeez.cli
 
 import com.beust.jcommander.JCommander
+import com.beust.jcommander.ParameterException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -17,7 +18,7 @@ internal class CommandLineArgumentsParser {
             getParametersFileDirectory(commandLineArguments)?.also { rootDirectory ->
                 arguments.changeSetListFile = "$rootDirectory/${arguments.changeSetListFile}"
             }
-        } catch (e: RuntimeException) {
+        } catch (e: ParameterException) {
             LOGGER.error(e.message)
             jCommander.usage()
             System.exit(-1)

@@ -16,7 +16,7 @@ data class MongoAuth(val username: String, val password: CharArray, val authDb: 
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as MongoAuth
+        if (other !is MongoAuth) return false
 
         if (username != other.username) return false
         if (!Arrays.equals(password, other.password)) return false

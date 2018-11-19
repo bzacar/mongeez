@@ -13,20 +13,23 @@
 package org.mongeez
 
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.mongeez.dao.MongeezDao.Companion.MONGEEZ_COLLECTION_NAME
 import org.mongeez.dao.MongeezDaoException
 import org.mongeez.validation.ValidationException
 
 class MongeezTestSuite(private val create: (String) -> Mongeez) {
     fun testMongeez() {
         create("mongeez.xml").process()
-        assertThatCollections("mongeez", "organization", "user")
+        assertThatCollections(MONGEEZ_COLLECTION_NAME, ORGANIZATION_COLLECTION_NAME, USER_COLLECTION_NAME)
                 .have(5, 2, 2).documents()
     }
 
     fun testFailOnError_False() {
-        assertThatCollections("mongeez").containsNoDocuments()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME)
+                .containsNoDocuments()
         create("mongeez_fail.xml").process()
-        assertThatCollections("mongeez").have(2).documents()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME)
+                .have(2).documents()
     }
 
     fun testFailOnError_True(cause: Class<out Throwable>) {
@@ -37,48 +40,69 @@ class MongeezTestSuite(private val create: (String) -> Mongeez) {
 
     fun testNoFiles() {
         create("mongeez_empty.xml").process()
-        assertThatCollections("mongeez").have(1).documents()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME)
+                .have(1).documents()
     }
 
     fun testNoFailureOnEmptyChangeLog() {
-        assertThatCollections("mongeez").containsNoDocuments()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME)
+                .containsNoDocuments()
         create("mongeez_empty_changelog.xml").process()
-        assertThatCollections("mongeez").have(1).documents()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME)
+                .have(1).documents()
     }
 
     fun testNoFailureOnNoChangeFilesBlock() {
-        assertThatCollections("mongeez").containsNoDocuments()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME)
+                .containsNoDocuments()
         assertThatThrownBy { create("mongeez_no_changefiles_declared.xml").process() }
                 .isInstanceOf(ValidationException::class.java)
     }
 
     fun testChangesWContextContextNotSet() {
-        assertThatCollections("mongeez").containsNoDocuments()
-        create("mongeez_contexts.xml").process()
-        assertThatCollections("mongeez", "car").have(2, 2).documents()
-        assertThatCollections("user", "organization", "house").containsNoDocuments()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME)
+                .containsNoDocuments()
+        create(MONGEEZ_CONTEXT_CHANGE_SETS_FILE).process()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME, CAR_COLLECTION_NAME)
+                .have(2, 2).documents()
+        assertThatCollections(USER_COLLECTION_NAME, ORGANIZATION_COLLECTION_NAME, HOUSE_COLLECTION_NAME)
+                .containsNoDocuments()
     }
 
     fun testChangesWContextContextSetToUsers() {
-        assertThatCollections("mongeez").containsNoDocuments()
-        create("mongeez_contexts.xml")
+        assertThatCollections(MONGEEZ_COLLECTION_NAME)
+                .containsNoDocuments()
+        create(MONGEEZ_CONTEXT_CHANGE_SETS_FILE)
                 .apply { setContext("users") }
                 .process()
-        assertThatCollections("mongeez", "car", "user", "house").have(4, 2, 2, 2).documents()
-        assertThatCollections("organization").containsNoDocuments()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME, CAR_COLLECTION_NAME, USER_COLLECTION_NAME, HOUSE_COLLECTION_NAME)
+                .have(4, 2, 2, 2).documents()
+        assertThatCollections(ORGANIZATION_COLLECTION_NAME)
+                .containsNoDocuments()
     }
 
     fun testChangesWContextContextSetToOrganizations() {
-        assertThatCollections("mongeez").containsNoDocuments()
-        create("mongeez_contexts.xml")
+        assertThatCollections(MONGEEZ_COLLECTION_NAME)
+                .containsNoDocuments()
+        create(MONGEEZ_CONTEXT_CHANGE_SETS_FILE)
                 .apply { setContext("organizations") }
                 .process()
-        assertThatCollections("mongeez", "car", "organization", "house").have(4, 2, 2, 2).documents()
-        assertThatCollections("user").containsNoDocuments()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME, CAR_COLLECTION_NAME, ORGANIZATION_COLLECTION_NAME, HOUSE_COLLECTION_NAME)
+                .have(4, 2, 2, 2).documents()
+        assertThatCollections(USER_COLLECTION_NAME)
+                .containsNoDocuments()
     }
 
     fun testFailDuplicateIds() {
         assertThatThrownBy { create("mongeez_fail_on_duplicate_changeset_ids.xml").process() }
                 .isInstanceOf(ValidationException::class.java)
+    }
+
+    private companion object {
+        const val USER_COLLECTION_NAME = "user"
+        const val ORGANIZATION_COLLECTION_NAME = "organization"
+        const val CAR_COLLECTION_NAME = "car"
+        const val HOUSE_COLLECTION_NAME = "house"
+        const val MONGEEZ_CONTEXT_CHANGE_SETS_FILE = "mongeez_contexts.xml"
     }
 }

@@ -29,7 +29,7 @@ internal constructor(private val db: MongoDatabase,
                      private val changeSetAttributes: List<ChangeSetAttribute>,
                      private val useMongoShell: Boolean) {
     private val mongeezCollection: MongoCollection<Document>
-        get() = db.getCollection("mongeez")
+        get() = db.getCollection(MONGEEZ_COLLECTION_NAME)
 
     fun wasExecuted(changeSet: ChangeSet): Boolean {
         val query = Document("type", RecordType.CHANGE_SET_EXECUTION.dbVal)
@@ -81,8 +81,9 @@ internal constructor(private val db: MongoDatabase,
                 }
     }
 
-    private companion object {
-        fun String?.getTheCode(code: String): String {
+    internal companion object {
+        const val MONGEEZ_COLLECTION_NAME = "mongeez"
+        private fun String?.getTheCode(code: String): String {
             return if (this == null) {
                 code
             } else {
