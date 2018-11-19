@@ -1,14 +1,15 @@
+[![Build Status](https://travis-ci.org/bzacar/mongeez.svg?branch=master)](https://travis-ci.org/bzacar/mongeez)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.bzacar/mongeez.svg)](https://mvnrepository.com/artifact/com.github.bzacar/mongeez)
+[![Known Vulnerabilities](https://snyk.io/test/github/bzacar/mongeez/badge.svg)](https://snyk.io/test/github/bzacar/mongeez)
+
 ### Note: This is a fork of [mongeez](https://github.com/mongeez/mongeez)
 
 It uses a different maven groupId.
-
-Latest release:
 
 ```xml
 <dependency>
     <groupId>com.github.bzacar</groupId>
     <artifactId>mongeez</artifactId>
-    <version>0.9.8-bzacar</version>
 </dependency>
 ```
 
@@ -81,7 +82,7 @@ repo1.maven.org - http://repo1.maven.org/maven2/org/mongeez/mongeez
 
 Hopefully this thing is routinely green. Travis-CI monitors new code to this project and tests it on a variety of JDKs.
 
-[![Build Status](https://travis-ci.org/bzacar/mongeez.svg?branch=master)](https://travis-ci.org/bzacar/mongeez)
+
 
 ### Command Line Interface Tool
 This fork also includes a command line interface tool which uses mongeez to execute change sets on the database.
@@ -93,7 +94,6 @@ You can also add it as a dependency to your projects:
 <dependency>
     <groupId>com.github.bzacar</groupId>
     <artifactId>mongeez-cli</artifactId>
-    <version>0.9.8-bzacar</version>
     <type>tar.gz</type>
     <classifier>dist</classifier>
     <exclusions>
