@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/bzacar/mongeez.svg?branch=master)](https://travis-ci.org/bzacar/mongeez)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.bzacar/mongeez.svg)](https://mvnrepository.com/artifact/com.github.bzacar/mongeez)
 [![Known Vulnerabilities](https://snyk.io/test/github/bzacar/mongeez/badge.svg)](https://snyk.io/test/github/bzacar/mongeez)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1487271dbeca499bb463bf202e7458fd)](https://www.codacy.com/app/bzacar/mongeez?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bzacar/mongeez&amp;utm_campaign=Badge_Grade)
 
 ### Note: This is a fork of [mongeez](https://github.com/mongeez/mongeez)
 
