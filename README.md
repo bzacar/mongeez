@@ -8,7 +8,7 @@ Latest release:
 <dependency>
     <groupId>com.github.bzacar</groupId>
     <artifactId>mongeez</artifactId>
-    <version>0.9.7-bzacar</version>
+    <version>0.9.8-bzacar</version>
 </dependency>
 ```
 
@@ -93,7 +93,7 @@ You can also add it as a dependency to your projects:
 <dependency>
     <groupId>com.github.bzacar</groupId>
     <artifactId>mongeez-cli</artifactId>
-    <version>0.9.7-bzacar</version>
+    <version>0.9.8-bzacar</version>
     <type>tar.gz</type>
     <classifier>dist</classifier>
     <exclusions>
