@@ -1,6 +1,6 @@
 # Mongeez #
 
-### Version 0.9.7-bzacar ###
+### Version 0.9.8-bzacar ###
 * Upgraded vulnerable dependencies
 
 ### Version 0.9.7-bzacar ###
