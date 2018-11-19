@@ -10,7 +10,7 @@
 
   <groupId>com.github.bzacar</groupId>
   <artifactId>mongeez-parent</artifactId>
-  <version>0.9.8-bzacar-SNAPSHOT</version>
+  <version>0.9.9-bzacar-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
     <module>mongeez</module>
@@ -78,7 +78,10 @@
   <profiles>
     <profile>
       <!--To release:
-      mvn clean deploy -DperformRelease-->
+      mvn versions:set versions:commit -DnewVersion="<version without snapshot>"
+      mvn clean deploy -DperformRelease
+      mvn versions:set versions:commit -DnewVersion="<next version with snapshot>"
+      -->
       <id>release-sign-artifacts</id>
       <activation>
         <property>
@@ -139,4 +142,27 @@
       </build>
     </profile>
   </profiles>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>3.3.4</version>
+        <configuration>
+          <format>ALL</format>
+          <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+          <centralAnalyzerEnabled>false</centralAnalyzerEnabled>
+          <nexusAnalyzerEnabled>false</nexusAnalyzerEnabled>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <phase>site</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -6,7 +6,6 @@ import org.bson.Document
 import org.mongeez.dao.ChangeSetAttribute
 import org.mongeez.dao.RecordType
 
-
 object MongeezDaoConfigurationRecordConfigurer {
     private val DEFAULT_CHANGE_SET_ATTRIBUTES = listOf(ChangeSetAttribute.FILE, ChangeSetAttribute.CHANGE_ID, ChangeSetAttribute.AUTHOR)
 

@@ -5,7 +5,6 @@ import com.mongodb.client.model.Indexes.ascending
 import org.bson.Document
 import org.mongeez.dao.ChangeSetAttribute
 
-
 object MongeezDaoIndexConfigurer {
     fun configureIndexes(mongeezCollection: MongoCollection<Document>,
                          changeSetAttributes: List<ChangeSetAttribute>) {
