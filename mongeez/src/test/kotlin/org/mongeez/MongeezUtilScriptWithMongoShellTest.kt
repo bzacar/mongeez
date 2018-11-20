@@ -4,18 +4,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.mongeez.dao.shell.ShellException
-import org.springframework.core.io.ClassPathResource
 
-@Tag("shell")
+@Tag(SHELL_TAG)
 class MongeezUtilScriptWithMongoShellTest {
-    private val mongeezUtilScriptTestSuite = MongeezUtilScriptTestSuite { path ->
-        Mongeez().apply {
-            setFile(ClassPathResource(path))
-            setServerAddress(serverAddress)
-            setDbName(DB_NAME)
-            setUseMongoShell(true)
-        }
-    }
+    private val mongeezUtilScriptTestSuite = MongeezUtilScriptTestSuite(createMongeezWithShell)
 
     @BeforeEach
     fun setUp() {

@@ -4,17 +4,10 @@ import com.mongodb.MongoCommandException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import org.springframework.core.io.ClassPathResource
 
-@Tag("dao")
+@Tag(DAO_TAG)
 class MongeezUtilScriptTest {
-    private val mongeezUtilScriptTestSuite = MongeezUtilScriptTestSuite { path ->
-        Mongeez().apply {
-            setFile(ClassPathResource(path))
-            setServerAddress(serverAddress)
-            setDbName(DB_NAME)
-        }
-    }
+    private val mongeezUtilScriptTestSuite = MongeezUtilScriptTestSuite(createMongeezWithoutShell)
 
     @BeforeEach
     fun setUp() {

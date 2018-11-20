@@ -8,8 +8,8 @@ import org.mongeez.dao.RecordType
 
 object MongeezDaoRecordTypeConfigurer {
     fun addTypeToUntypedRecords(mongeezCollection: MongoCollection<Document>) {
-        val query = exists("type", false)
-        val update = set("type", RecordType.CHANGE_SET_EXECUTION.dbVal)
+        val query = exists(TYPE_FIELD_NAME, false)
+        val update = set(TYPE_FIELD_NAME, RecordType.CHANGE_SET_EXECUTION.dbVal)
         mongeezCollection.updateMany(query, update)
     }
 }

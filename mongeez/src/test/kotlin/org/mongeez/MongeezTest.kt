@@ -12,21 +12,13 @@
 
 package org.mongeez
 
-import com.mongodb.MongoCommandException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import org.springframework.core.io.ClassPathResource
 
-@Tag("dao")
+@Tag(DAO_TAG)
 class MongeezTest {
-    private val mongeezTestSuite = MongeezTestSuite { path ->
-        Mongeez().apply {
-            setFile(ClassPathResource(path))
-            setServerAddress(serverAddress)
-            setDbName(DB_NAME)
-        }
-    }
+    private val mongeezTestSuite = MongeezTestSuite(createMongeezWithoutShell)
 
     @BeforeEach
     fun setUp() {
@@ -50,11 +42,6 @@ class MongeezTest {
     }
 
     @Test
-    fun testFailOnError_True() {
-        mongeezTestSuite.testFailOnError_True(MongoCommandException::class.java)
-    }
-
-    @Test
     fun testNoFiles() {
         mongeezTestSuite.testNoFiles()
     }
@@ -62,30 +49,5 @@ class MongeezTest {
     @Test
     fun testNoFailureOnEmptyChangeLog() {
         mongeezTestSuite.testNoFailureOnEmptyChangeLog()
-    }
-
-    @Test
-    fun testNoFailureOnNoChangeFilesBlock() {
-        mongeezTestSuite.testNoFailureOnNoChangeFilesBlock()
-    }
-
-    @Test
-    fun testChangesWContextContextNotSet() {
-        mongeezTestSuite.testChangesWContextContextNotSet()
-    }
-
-    @Test
-    fun testChangesWContextContextSetToUsers() {
-        mongeezTestSuite.testChangesWContextContextSetToUsers()
-    }
-
-    @Test
-    fun testChangesWContextContextSetToOrganizations() {
-        mongeezTestSuite.testChangesWContextContextSetToOrganizations()
-    }
-
-    @Test
-    fun testFailDuplicateIds() {
-        mongeezTestSuite.testFailDuplicateIds()
     }
 }

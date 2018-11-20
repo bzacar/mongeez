@@ -4,7 +4,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at  http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
  * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
@@ -26,7 +26,7 @@ class FilesetXMLReader {
     fun getFiles(file: Resource): ChangeSetAndUtilFiles {
         try {
             val digester = getDigester()
-            logger.info("Parsing XML Fileset file {}", file.filename)
+            LOGGER.info("Parsing XML Fileset file {}", file.filename)
             val changeFileSet = digester.parse<Any>(file.inputStream) as? ChangeFileSet
             return changeFileSet?.getChangeFilesAndUtil(file)
                     ?: throw ValidationException(getValidationExceptionMessage(file))
@@ -42,24 +42,28 @@ class FilesetXMLReader {
             file.createRelative(changeFile.path)
         }
         val utilResource = util?.let { file.createRelative(it.path) }
-        logger.info("Num of changefiles found " + changeFiles.size)
+        LOGGER.info("Num of changefiles found " + changeFiles.size)
         return ChangeSetAndUtilFiles(changeFiles, utilResource)
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(FilesetXMLReader::class.java)
+        private val LOGGER = LoggerFactory.getLogger(FilesetXMLReader::class.java)
+        private const val CHANGE_FILES_TAG = "changeFiles"
+        private const val CHANGE_FILES_FILE_TAG = "$CHANGE_FILES_TAG/file"
+        private const val CHANGE_FILES_UTIL_TAG = "$CHANGE_FILES_TAG/util"
 
         private fun getDigester() = Digester().apply {
             validating = false
-            addObjectCreate("changeFiles", ChangeFileSet::class.java)
-            addObjectCreate("changeFiles/file", ChangeFile::class.java)
-            addSetProperties("changeFiles/file")
-            addSetNext("changeFiles/file", "add")
-            addObjectCreate("changeFiles/util", ChangeFile::class.java)
-            addSetProperties("changeFiles/util")
-            addSetNext("changeFiles/util", "setUtil")
+            addObjectCreate(CHANGE_FILES_TAG, ChangeFileSet::class.java)
+            addObjectCreate(CHANGE_FILES_FILE_TAG, ChangeFile::class.java)
+            addSetProperties(CHANGE_FILES_FILE_TAG)
+            addSetNext(CHANGE_FILES_FILE_TAG, "add")
+            addObjectCreate(CHANGE_FILES_UTIL_TAG, ChangeFile::class.java)
+            addSetProperties(CHANGE_FILES_UTIL_TAG)
+            addSetNext(CHANGE_FILES_UTIL_TAG, "setUtil")
         }
 
-        private fun getValidationExceptionMessage(file: Resource) = "The file ${file.filename} doesn't seem to contain a changeFiles declaration. Are you using the correct file to initialize Mongeez?"
+        private fun getValidationExceptionMessage(file: Resource) =
+                "The file ${file.filename} doesn't seem to contain a changeFiles declaration. Are you using the correct file to initialize Mongeez?"
     }
 }

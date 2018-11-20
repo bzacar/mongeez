@@ -19,6 +19,8 @@ import com.mongodb.client.model.Filters.exists
 import com.mongodb.client.model.Sorts.descending
 import org.bson.Document
 import org.mongeez.commands.ChangeSet
+import org.mongeez.dao.factory.DATE_FIELD_NAME
+import org.mongeez.dao.factory.TYPE_FIELD_NAME
 import org.mongeez.dao.shell.MongoShellRunner
 import org.mongeez.dao.shell.ShellException
 import java.util.Date
@@ -32,7 +34,7 @@ internal constructor(private val db: MongoDatabase,
         get() = db.getCollection(MONGEEZ_COLLECTION_NAME)
 
     fun wasExecuted(changeSet: ChangeSet): Boolean {
-        val query = Document("type", RecordType.CHANGE_SET_EXECUTION.dbVal)
+        val query = Document(TYPE_FIELD_NAME, RecordType.CHANGE_SET_EXECUTION.dbVal)
         for (attribute in changeSetAttributes) {
             query.append(attribute.dbFieldName, attribute.getAttributeValue(changeSet))
         }
@@ -58,18 +60,18 @@ internal constructor(private val db: MongoDatabase,
     }
 
     fun logChangeSet(changeSet: ChangeSet) {
-        val dbObject = Document("type", RecordType.CHANGE_SET_EXECUTION.dbVal)
+        val dbObject = Document(TYPE_FIELD_NAME, RecordType.CHANGE_SET_EXECUTION.dbVal)
         for (attribute in changeSetAttributes) {
             dbObject.append(attribute.dbFieldName, attribute.getAttributeValue(changeSet))
         }
-        dbObject.append("date", Date())
+        dbObject.append(DATE_FIELD_NAME, Date())
         mongeezCollection.insertOne(dbObject)
     }
 
     fun getLastExecutedChangeSet(): ChangeSet? {
         return mongeezCollection
-                .find(exists("date"))
-                .sort(descending("date"))
+                .find(exists(DATE_FIELD_NAME))
+                .sort(descending(DATE_FIELD_NAME))
                 .firstOrNull()
                 ?.let { changeSetDocument ->
                     ChangeSet().apply {

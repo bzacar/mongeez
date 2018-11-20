@@ -10,9 +10,9 @@ object MongeezDaoConfigurationRecordConfigurer {
     private val DEFAULT_CHANGE_SET_ATTRIBUTES = listOf(ChangeSetAttribute.FILE, ChangeSetAttribute.CHANGE_ID, ChangeSetAttribute.AUTHOR)
 
     fun getChangeSetAttributeList(mongeezCollection: MongoCollection<Document>): List<ChangeSetAttribute> {
-        val query = eq("type", RecordType.CONFIGURATION.dbVal)
+        val query = eq(TYPE_FIELD_NAME, RecordType.CONFIGURATION.dbVal)
         val configRecord = mongeezCollection.find(query).first() ?: createNewConfigRecord(mongeezCollection)
-        val supportResourcePath = configRecord.getBoolean("supportResourcePath")
+        val supportResourcePath = configRecord.getBoolean(SUPPORT_RESOURCE_PATH_FIELD_NAME)
         return if (supportResourcePath) {
             DEFAULT_CHANGE_SET_ATTRIBUTES + ChangeSetAttribute.RESOURCE_PATH
         } else {
@@ -24,12 +24,12 @@ object MongeezDaoConfigurationRecordConfigurer {
         val configRecord = if (mongeezCollection.countDocuments() > 0L) {
             // We have pre-existing records, so don't assume that they support the latest features
             Document()
-                    .append("type", RecordType.CONFIGURATION.dbVal)
-                    .append("supportResourcePath", false)
+                    .append(TYPE_FIELD_NAME, RecordType.CONFIGURATION.dbVal)
+                    .append(SUPPORT_RESOURCE_PATH_FIELD_NAME, false)
         } else {
             Document()
-                    .append("type", RecordType.CONFIGURATION.dbVal)
-                    .append("supportResourcePath", true)
+                    .append(TYPE_FIELD_NAME, RecordType.CONFIGURATION.dbVal)
+                    .append(SUPPORT_RESOURCE_PATH_FIELD_NAME, true)
         }
         mongeezCollection.insertOne(configRecord)
         return configRecord
