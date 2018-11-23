@@ -1,18 +1,19 @@
 package org.mongeez
 
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.mongeez.dao.MongeezDao.Companion.MONGEEZ_COLLECTION_NAME
 import org.mongeez.dao.MongeezDaoException
 import org.mongeez.validation.ValidationException
 
 class MongeezUtilScriptTestSuite(private val create: (String) -> Mongeez) {
     fun testUtilFunctionalityInXmlChangeSets() {
         create("mongeez_with_util.xml").process()
-        assertThatCollections("mongeez", "users").have(2, 2).documents()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME, USER_COLLECTION_NAME).have(2, 2).documents()
     }
 
     fun testMultipleUtilsFunctionalityInXmlChangeSets() {
         create("mongeez_with_multiple_utils.xml").process()
-        assertThatCollections("mongeez", "users").have(2, 2).documents()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME, USER_COLLECTION_NAME).have(2, 2).documents()
     }
 
     fun testUtilFunctionalityInXmlChangeSetsWhenUtilIsNotSpecified() {
@@ -23,12 +24,12 @@ class MongeezUtilScriptTestSuite(private val create: (String) -> Mongeez) {
 
     fun testUtilFunctionalityInJsChangeSets() {
         create("mongeez_with_util_js.xml").process()
-        assertThatCollections("mongeez", "users").have(2, 2).documents()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME, USER_COLLECTION_NAME).have(2, 2).documents()
     }
 
     fun testMultipleUtilsFunctionalityInJsChangeSets() {
         create("mongeez_with_multiple_utils_js.xml").process()
-        assertThatCollections("mongeez", "users").have(2, 2).documents()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME, USER_COLLECTION_NAME).have(2, 2).documents()
     }
 
     fun testUtilFunctionalityInJsChangeSetsWhenUtilIsNotSpecified() {
@@ -42,5 +43,9 @@ class MongeezUtilScriptTestSuite(private val create: (String) -> Mongeez) {
                 .isInstanceOf(MongeezDaoException::class.java)
                 .hasMessageContaining("addNuanceAndInsert is not defined")
                 .hasCauseInstanceOf(cause)
+    }
+
+    private companion object {
+        const val USER_COLLECTION_NAME = "users"
     }
 }
