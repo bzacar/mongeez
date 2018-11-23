@@ -1,0 +1,5 @@
+<changeFiles>
+  <file path="changeset_using_multiple_util.xml"/>
+  <util path="util1.xml"/>
+  <util path="util2.xml"/>
+</changeFiles>

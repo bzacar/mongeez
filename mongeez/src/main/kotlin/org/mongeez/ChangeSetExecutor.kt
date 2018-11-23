@@ -14,7 +14,7 @@ constructor(serverAddress: ServerAddress,
 
     private val dao: MongeezDao = MongeezDaoFactory.create(serverAddress, dbName, auth, useMongoShell)
 
-    fun execute(changeSet: ChangeSet, utilScript: String? = null) {
+    fun execute(changeSet: ChangeSet, utilScript: String) {
         try {
             changeSet.getMergedScript().run(dao, utilScript)
         } catch (e: RuntimeException) {

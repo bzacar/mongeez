@@ -15,8 +15,8 @@ internal class FormattedJavascriptChangeSetParser {
                         author = matcher.group(1)
                         changeId = matcher.group(2)
                         isRunAlways = parseAttribute(ATTRIBUTE_RUN_ALWAYS_PATTERN.matcher(line))
-                        useUtil = parseAttribute(ATTRIBUTE_USE_UTIL_PATTERN.matcher(line))
                         setContexts(parseAttributeString(ATTRIBUTE_CONTEXTS_PATTERN.matcher(line)))
+                        setUtils(parseAttributeString(ATTRIBUTE_UTILS_PATTERN.matcher(line)))
                     }
                 }
     }
@@ -35,7 +35,7 @@ internal class FormattedJavascriptChangeSetParser {
     companion object {
         private val CHANGESET_PATTERN = Pattern.compile("//\\s*changeset\\s+([\\w\\-]+):([\\w\\-]+).*", CASE_INSENSITIVE)
         private val ATTRIBUTE_RUN_ALWAYS_PATTERN = Pattern.compile(".*runAlways:\\s*(\\w+).*", CASE_INSENSITIVE)
-        private val ATTRIBUTE_USE_UTIL_PATTERN = Pattern.compile(".*useUtil:\\s*(\\w+).*", CASE_INSENSITIVE)
         private val ATTRIBUTE_CONTEXTS_PATTERN = Pattern.compile(".*contexts:([\\w]+(?:, *[\\w]+)*).*", CASE_INSENSITIVE)
+        private val ATTRIBUTE_UTILS_PATTERN = Pattern.compile(".*utils:([\\w./_\\-]+(?:, *[\\w./_\\-]+)*).*", CASE_INSENSITIVE)
     }
 }

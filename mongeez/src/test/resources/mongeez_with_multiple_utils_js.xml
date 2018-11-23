@@ -1,0 +1,5 @@
+<changeFiles>
+  <file path="org/mongeez/reader/changeset_using_multiple_util.js"/>
+  <util path="org/mongeez/reader/util1.js"/>
+  <util path="org/mongeez/reader/util2.js"/>
+</changeFiles>

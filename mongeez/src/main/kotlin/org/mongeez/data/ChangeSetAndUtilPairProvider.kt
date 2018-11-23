@@ -12,9 +12,9 @@ internal class ChangeSetAndUtilPairProvider {
     var changeSetsValidator: ChangeSetsValidator = DefaultChangeSetsValidator()
 
     fun get(): ChangeSetAndUtilPair {
-        val (changeSetFiles, util) = changeSetFileProvider.changeSetFiles
+        val (changeSetFiles, utils) = changeSetFileProvider.changeSetFiles
         val changeSets = changeSetFiles.getChangeSets()
-        val utilChangeSet = util.getChangeSet()
+        val utilChangeSet = utils.getChangeSets()
         return ChangeSetAndUtilPair(changeSets, utilChangeSet)
     }
 
@@ -26,6 +26,18 @@ internal class ChangeSetAndUtilPairProvider {
                     ChangeSetLogger.log(it)
                     changeSetsValidator.validate(it)
                 }
+    }
+
+    private fun Map<String, Resource>.getChangeSets(): Map<String, ChangeSet> {
+        return asSequence()
+                .mapNotNull { (key, value) ->
+                    ChangeSetReaderFactory
+                            .getChangeSetReader(value)
+                            ?.getChangeSets(value)
+                            ?.single()
+                            ?.let { key to it }
+                }
+                .toMap()
     }
 
     private fun Resource?.getChangeSet(): ChangeSet? {

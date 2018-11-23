@@ -19,12 +19,13 @@ class ChangeSet {
     lateinit var author: String
     lateinit var file: String
     var resourcePath: String? = null
-    private var contextsStr: String? = null
-    private var contexts: Set<String>? = null
+    private var contextsStr: String = ""
+    private var contexts: Set<String> = emptySet()
 
     var isFailOnError = true
     var isRunAlways: Boolean = false
-    var useUtil: Boolean = false
+    private var utilsStr = ""
+    private var utils: List<String> = emptyList()
 
     private val commands = ArrayList<Script>()
 
@@ -41,20 +42,20 @@ class ChangeSet {
     }
 
     fun getContexts(): String {
-        return getContextStr()
+        return contextsStr
     }
 
     fun setContexts(contextsStr: String?) {
-        this.contextsStr = contextsStr
-        contexts = null
+        this.contextsStr = contextsStr.orEmpty()
+        contexts = emptySet()
     }
 
     fun canBeAppliedInContext(context: String?): Boolean {
-        if (contextsStr == null) {
+        if (contextsStr.isEmpty()) {
             return true
         }
-        if (contexts == null) {
-            contexts = getContextStr()
+        if (contexts.isEmpty()) {
+            contexts = contextsStr
                     .split(",".toRegex())
                     .dropLastWhile { it.isEmpty() }
                     .asSequence()
@@ -64,12 +65,35 @@ class ChangeSet {
                     .filter { it.isNotEmpty() }
                     .toSet()
         }
-        return getContextsSet().isEmpty() || context != null && getContextsSet().contains(context.toLowerCase().trim())
+        return contexts.isEmpty() || context != null && contexts.contains(context.toLowerCase().trim())
+    }
+
+    fun setUtils(utilsStr: String?) {
+        this.utilsStr = utilsStr.orEmpty()
+        utils = emptyList()
+    }
+
+    fun getUtils(): String {
+        return utilsStr
+    }
+
+    fun getUtilsList(): List<String> {
+        if (utilsStr.isEmpty()) {
+            return emptyList()
+        }
+        if (utils.isEmpty()) {
+            utils = utilsStr
+                    .split(",".toRegex())
+                    .dropLastWhile { it.isEmpty() }
+                    .asSequence()
+                    .map { utilPath ->
+                        utilPath.trim()
+                    }
+                    .filter { it.isNotEmpty() }
+                    .toList()
+        }
+        return utils
     }
 
     fun summary(): String = "$author:$changeId:${resourcePath ?: file}"
-
-    private fun getContextStr() = contextsStr ?: ""
-
-    private fun getContextsSet() = contexts.orEmpty()
 }

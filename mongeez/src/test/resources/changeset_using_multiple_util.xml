@@ -1,5 +1,5 @@
 <mongoChangeLog>
-  <changeSet changeId="ChangeSet-Using-Util" author="bzacar" utils="util.xml">
+  <changeSet changeId="ChangeSet-Using-Util" author="bzacar" utils="util1.xml,util2.xml">
     <script>
       addNuanceAndInsert("users", [
       {"name": "John", "surname": "Doe"},

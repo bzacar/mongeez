@@ -41,9 +41,11 @@ class FilesetXMLReader {
         val changeFiles = getChangeFiles().map { changeFile ->
             file.createRelative(changeFile.path)
         }
-        val utilResource = util?.let { file.createRelative(it.path) }
+        val utils = getUtils().asSequence().map { (key, value) ->
+            key to file.createRelative(value.path)
+        }.toMap()
         LOGGER.info("Num of changefiles found " + changeFiles.size)
-        return ChangeSetAndUtilFiles(changeFiles, utilResource)
+        return ChangeSetAndUtilFiles(changeFiles, utils)
     }
 
     companion object {
@@ -60,7 +62,7 @@ class FilesetXMLReader {
             addSetNext(CHANGE_FILES_FILE_TAG, "add")
             addObjectCreate(CHANGE_FILES_UTIL_TAG, ChangeFile::class.java)
             addSetProperties(CHANGE_FILES_UTIL_TAG)
-            addSetNext(CHANGE_FILES_UTIL_TAG, "setUtil")
+            addSetNext(CHANGE_FILES_UTIL_TAG, "addUtil")
         }
 
         private fun getValidationExceptionMessage(file: Resource) =

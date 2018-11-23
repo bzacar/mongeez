@@ -1,0 +1,13 @@
+<mongoChangeLog>
+  <changeSet changeId="Util-ChangeSet" author="bzacar">
+    <script>
+      function addNuanceAndInsert(collection, documents) {
+      for (let i = 0; i &lt; documents.length; i++) {
+      documents[i]["nuance"] = Util
+      .stringToASCIISum(documents[i]["name"] + documents[i]["surname"])
+      }
+      db.getCollection(collection).insertMany(documents);
+      }
+    </script>
+  </changeSet>
+</mongoChangeLog>

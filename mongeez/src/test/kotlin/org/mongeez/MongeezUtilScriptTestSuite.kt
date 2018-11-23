@@ -10,10 +10,15 @@ class MongeezUtilScriptTestSuite(private val create: (String) -> Mongeez) {
         assertThatCollections("mongeez", "users").have(2, 2).documents()
     }
 
+    fun testMultipleUtilsFunctionalityInXmlChangeSets() {
+        create("mongeez_with_multiple_utils.xml").process()
+        assertThatCollections("mongeez", "users").have(2, 2).documents()
+    }
+
     fun testUtilFunctionalityInXmlChangeSetsWhenUtilIsNotSpecified() {
         assertThatThrownBy { create("mongeez_without_util.xml").process() }
                 .isInstanceOf(ValidationException::class.java)
-                .hasMessageContaining("Changeset flagged to use util but no util found!")
+                .hasMessageContaining("Changeset flagged to use util `util.xml` but it is not found!")
     }
 
     fun testUtilFunctionalityInJsChangeSets() {
@@ -21,10 +26,15 @@ class MongeezUtilScriptTestSuite(private val create: (String) -> Mongeez) {
         assertThatCollections("mongeez", "users").have(2, 2).documents()
     }
 
+    fun testMultipleUtilsFunctionalityInJsChangeSets() {
+        create("mongeez_with_multiple_utils_js.xml").process()
+        assertThatCollections("mongeez", "users").have(2, 2).documents()
+    }
+
     fun testUtilFunctionalityInJsChangeSetsWhenUtilIsNotSpecified() {
         assertThatThrownBy { create("mongeez_without_util_js.xml").process() }
                 .isInstanceOf(ValidationException::class.java)
-                .hasMessageContaining("Changeset flagged to use util but no util found!")
+                .hasMessageContaining("Changeset flagged to use util `org/mongeez/reader/util.js` but it is not found!")
     }
 
     fun testUtilFunctionalityWhenUtilFlagIsNotSet(cause: Class<out Throwable>) {

@@ -24,10 +24,7 @@ constructor(private val context: String?,
     fun execute(changeSets: ChangeSetAndUtilPair) {
         getExecutableChangeSets(changeSets)
                 .forEach { changeSet ->
-                    if (changeSet.useUtil)
-                        changeSetExecutor.execute(changeSet, changeSets.utilScript)
-                    else
-                        changeSetExecutor.execute(changeSet)
+                    changeSetExecutor.execute(changeSet, changeSets.getUtilScript(changeSet.getUtilsList()))
                     logger.info("ChangeSet " + changeSet.changeId + " has been executed")
                 }
     }

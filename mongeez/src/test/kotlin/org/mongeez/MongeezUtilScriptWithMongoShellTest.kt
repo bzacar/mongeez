@@ -20,6 +20,11 @@ class MongeezUtilScriptWithMongoShellTest {
     }
 
     @Test
+    fun testMultipleUtilsFunctionalityInXmlChangeSets() {
+        mongeezUtilScriptTestSuite.testMultipleUtilsFunctionalityInXmlChangeSets()
+    }
+
+    @Test
     fun testUtilFunctionalityInXmlChangeSetsWhenUtilIsNotSpecified() {
         mongeezUtilScriptTestSuite.testUtilFunctionalityInXmlChangeSetsWhenUtilIsNotSpecified()
     }
@@ -27,6 +32,11 @@ class MongeezUtilScriptWithMongoShellTest {
     @Test
     fun testUtilFunctionalityInJsChangeSets() {
         mongeezUtilScriptTestSuite.testUtilFunctionalityInJsChangeSets()
+    }
+
+    @Test
+    fun testMultipleUtilsFunctionalityInJsChangeSets() {
+        mongeezUtilScriptTestSuite.testMultipleUtilsFunctionalityInJsChangeSets()
     }
 
     @Test

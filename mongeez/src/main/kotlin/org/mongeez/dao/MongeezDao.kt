@@ -41,7 +41,7 @@ internal constructor(private val db: MongoDatabase,
         return mongeezCollection.countDocuments(query) > 0
     }
 
-    fun runScript(code: String, util: String?) {
+    fun runScript(code: String, util: String) {
         val theCode = util.getTheCode(code)
         try {
             if (useMongoShell) {
@@ -85,8 +85,8 @@ internal constructor(private val db: MongoDatabase,
 
     internal companion object {
         const val MONGEEZ_COLLECTION_NAME = "mongeez"
-        private fun String?.getTheCode(code: String): String {
-            return if (this == null) {
+        private fun String.getTheCode(code: String): String {
+            return if (this.isEmpty()) {
                 code
             } else {
                 "$this\n$code"

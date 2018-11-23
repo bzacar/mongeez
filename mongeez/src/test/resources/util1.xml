@@ -1,0 +1,18 @@
+<mongoChangeLog>
+  <changeSet changeId="Util-ChangeSet" author="bzacar">
+    <script>
+      var Util = {
+      stringToASCIISum: function (value) {
+      return value
+      .split("")
+      .map(function (char) {
+      return char.charCodeAt(0);
+      })
+      .reduce(function (curr, prev) {
+      return prev + curr;
+      });
+      }
+      };
+    </script>
+  </changeSet>
+</mongoChangeLog>
