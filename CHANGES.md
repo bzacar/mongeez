@@ -1,5 +1,35 @@
 # Mongeez #
 
+## Version 0.9.9-bzacar ##
+* **useUtil option** is now gone. Instead you can use **utils option**
+* **utils option** can be used to define multiple util change files to be used with the given change set.
+Example usage of the option is:
+
+   XML:
+   ```xml
+   <changeSet changeId="ChangeSet-Using-Single-Util" author="bzacar" utils="util1.xml"/>
+   ```
+   ```xml
+   <changeSet changeId="ChangeSet-Using-Multiple-Util" author="bzacar" utils="util1.xml,util2.js"/>
+   ```
+   JS:
+   ```javascript
+   //changeset bzacar:ChangeSet-Using-Single-Util utils:util1.xml
+   ```
+   ```javascript
+   //changeset bzacar:ChangeSet-Using-Multiple-Util utils:util1.xml,util2.js
+   ```
+   Example mongeez.xml which defines util scripts:
+   ```xml
+   <changeFiles>
+     <file path="changeset_using_util.xml"/>
+     <util path="util1.xml"/>
+     <util path="util2.js"/>
+   </changeFiles>
+   ```
+   Change sets which uses utils option will be run together with util scripts referenced in that option. Util scripts will
+be loaded in the order they are defined in the option.
+
 ## Version 0.9.8-bzacar ##
 * Upgraded vulnerable dependencies
 

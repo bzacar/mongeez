@@ -16,27 +16,35 @@ It uses a different maven groupId.
 
 This fork has five basic differences from the original repository:
 1. All MongoDB java drivers are updated and all deprecated API uses are removed.
-1. **useUtil option**: A new option added to change sets to use util scripts. Util scripts are defined like any
-other change set and in mongeez.xml files they should be defined with util tag (instead of file tag used for 
-normal change sets). Example change set definition to use util script:
+1. **utils option**: A new option added to change sets to use util scripts. Util scripts are defined like any
+other change set and in mongeez.xml files they should be defined with util tag (instead of file tag used for
+normal change sets). It can be used to define multiple util change files to be used with the given change set.
+Example change set definition to use util script:
 
    XML:
    ```xml
-   <changeSet changeId="ChangeSet-Using-Util" author="bzacar" useUtil="true"/>
-   ``` 
+   <changeSet changeId="ChangeSet-Using-Single-Util" author="bzacar" utils="util1.xml"/>
+   ```
+   ```xml
+   <changeSet changeId="ChangeSet-Using-Multiple-Util" author="bzacar" utils="util1.xml,util2.js"/>
+   ```
    JS:
    ```javascript
-   //changeset bzacar:ChangeSet-Using-Util useUtil:true
+   //changeset bzacar:ChangeSet-Using-Single-Util utils:util1.xml
+   ```
+   ```javascript
+   //changeset bzacar:ChangeSet-Using-Multiple-Util utils:util1.xml,util2.js
    ```
    Example mongeez.xml which defines util scripts:
    ```xml
    <changeFiles>
      <file path="changeset_using_util.xml"/>
-     <util path="util.xml"/>
+     <util path="util1.xml"/>
+     <util path="util2.js"/>
    </changeFiles>
    ```
-   Change sets which are flagged with useUtil option will be run together with util script. Currently you can only 
-   define one util script change set.
+   Change sets which uses utils option will be run together with util scripts referenced in that option. Util scripts will
+be loaded in the order they are defined in the option.
 1. **useMongoShell option:** This option can be used in order to force the library to use mongo shell to run the
 change sets instead of using ```db.eval``` so that you don't need to create a special user in the database to execute
 ```db.eval``` commands. The drawback of this option is that it requires mongo shell to be install on the machine
