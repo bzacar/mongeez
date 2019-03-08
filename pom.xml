@@ -79,7 +79,9 @@
     <profile>
       <!--To release:
       mvn versions:set versions:commit -DnewVersion="<version without snapshot>"
+      export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/"
       mvn clean deploy -DperformRelease
+      export JAVA_HOME=
       mvn versions:set versions:commit -DnewVersion="<next version with snapshot>"
       -->
       <id>release-sign-artifacts</id>
