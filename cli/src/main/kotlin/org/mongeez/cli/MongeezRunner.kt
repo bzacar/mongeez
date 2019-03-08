@@ -34,7 +34,7 @@ internal object MongeezRunner {
     private fun Mongeez.run(isDryRun: Boolean) {
         try {
             if (isDryRun) {
-                executeDryRun()
+                dryRun().print { println(it) }
             } else {
                 process()
             }

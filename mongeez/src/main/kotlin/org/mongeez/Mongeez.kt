@@ -14,6 +14,7 @@ package org.mongeez
 
 import com.mongodb.ServerAddress
 import org.mongeez.data.ChangeSetAndUtilPairProvider
+import org.mongeez.data.DryRunResult
 import org.mongeez.reader.ChangeSetFileProvider
 import org.mongeez.reader.FilesetXMLChangeSetFileProvider
 import org.mongeez.validation.ChangeSetsValidator
@@ -32,7 +33,7 @@ class Mongeez {
         getChangeSetsExecutor().execute(changeSets)
     }
 
-    fun dryRun(): Pair<String?, List<String>> {
+    fun dryRun(): DryRunResult {
         val changeSets = changeSetAndUtilPairProvider.get()
         return getChangeSetsExecutor().getExecutables(changeSets)
     }

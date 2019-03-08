@@ -14,6 +14,7 @@ package org.mongeez
 
 import org.mongeez.commands.ChangeSet
 import org.mongeez.data.ChangeSetAndUtilPair
+import org.mongeez.data.DryRunResult
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -29,9 +30,9 @@ constructor(private val context: String?,
                 }
     }
 
-    fun getExecutables(changeSets: ChangeSetAndUtilPair): Pair<String?, List<String>> {
-        return changeSetExecutor.getLastExecutedChangeSet()?.summary() to
-                getExecutableChangeSets(changeSets).map { it.summary() }.toList()
+    fun getExecutables(changeSets: ChangeSetAndUtilPair): DryRunResult {
+        return DryRunResult(lastChangeSet = changeSetExecutor.getLastExecutedChangeSet()?.summary(),
+                executableChangeSets = getExecutableChangeSets(changeSets).map { it.summary() }.toList())
     }
 
     private fun getExecutableChangeSets(changeSets: ChangeSetAndUtilPair): Sequence<ChangeSet> {
