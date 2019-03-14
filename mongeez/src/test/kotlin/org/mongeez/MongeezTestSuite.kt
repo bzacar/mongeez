@@ -93,6 +93,18 @@ class MongeezTestSuite(private val create: (String) -> Mongeez) {
                 .containsNoDocuments()
     }
 
+    fun testChangesWContextContextSetToUsersOther() {
+        assertThatCollections(MONGEEZ_COLLECTION_NAME)
+                .containsNoDocuments()
+        create(MONGEEZ_CONTEXT_CHANGE_SETS_FILE)
+                .apply { setContext("users-extra") }
+                .process()
+        assertThatCollections(MONGEEZ_COLLECTION_NAME, CAR_COLLECTION_NAME, USER_COLLECTION_NAME)
+                .have(3, 2, 1).documents()
+        assertThatCollections(ORGANIZATION_COLLECTION_NAME, HOUSE_COLLECTION_NAME)
+                .containsNoDocuments()
+    }
+
     fun testFailDuplicateIds() {
         assertThatThrownBy { create("mongeez_fail_on_duplicate_changeset_ids.xml").process() }
                 .isInstanceOf(ValidationException::class.java)

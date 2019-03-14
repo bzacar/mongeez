@@ -28,14 +28,13 @@ internal class FormattedJavascriptChangeSetParser {
                 ?: false
     }
 
-    private fun parseAttributeString(attributeMatcher: Matcher): String? {
-        return attributeMatcher.takeIf { it.matches() }?.group(1)
-    }
+    private fun parseAttributeString(attributeMatcher: Matcher): String? =
+        attributeMatcher.takeIf { it.matches() }?.group(1)
 
     companion object {
         private val CHANGESET_PATTERN = Pattern.compile("//\\s*changeset\\s+([\\w\\-]+):([\\w\\-]+).*", CASE_INSENSITIVE)
         private val ATTRIBUTE_RUN_ALWAYS_PATTERN = Pattern.compile(".*runAlways:\\s*(\\w+).*", CASE_INSENSITIVE)
-        private val ATTRIBUTE_CONTEXTS_PATTERN = Pattern.compile(".*contexts:([\\w]+(?:, *[\\w]+)*).*", CASE_INSENSITIVE)
+        private val ATTRIBUTE_CONTEXTS_PATTERN = Pattern.compile(".*contexts:([\\w\\-]+(?:, *[\\w\\-]+)*).*", CASE_INSENSITIVE)
         private val ATTRIBUTE_UTILS_PATTERN = Pattern.compile(".*utils:([\\w./_\\-]+(?:, *[\\w./_\\-]+)*).*", CASE_INSENSITIVE)
     }
 }
