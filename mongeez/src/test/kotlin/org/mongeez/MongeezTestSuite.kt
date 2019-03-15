@@ -93,7 +93,7 @@ class MongeezTestSuite(private val create: (String) -> Mongeez) {
                 .containsNoDocuments()
     }
 
-    fun testChangesWContextContextSetToUsersOther() {
+    fun testChangesWContextContextSetToUsersExtra() {
         assertThatCollections(MONGEEZ_COLLECTION_NAME)
                 .containsNoDocuments()
         create(MONGEEZ_CONTEXT_CHANGE_SETS_FILE)
