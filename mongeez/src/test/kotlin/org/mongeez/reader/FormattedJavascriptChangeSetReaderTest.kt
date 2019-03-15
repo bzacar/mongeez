@@ -126,14 +126,15 @@ class FormattedJavascriptChangeSetReaderTest {
     @Test
     fun testChangeSetWithContexts() {
         val changeSets = parse("changeset_contexts.js")
-        assertThat(changeSets).hasSize(5)
+        assertThat(changeSets).hasSize(6)
                 .extracting("contexts", "isRunAlways")
                 .containsExactly(
                         tuple("users", false),
                         tuple("users,organizations", false),
                         tuple("users,organizations", true),
                         tuple("users, organizations", false),
-                        tuple("users, organizations", true))
+                        tuple("users, organizations", true),
+                        tuple("users-extra", false))
     }
 
     private fun parse(fileName: String, charset: Charset? = null): List<ChangeSet> {
