@@ -37,4 +37,9 @@
             db.house.insert({ "Type" : "Split-Level"});
         </script>
     </changeSet>
+    <changeSet changeId="ChangeSet-5" author="mlysaght" contexts="users-extra">
+        <script>
+            db.user.insert({ "Name" : "Oleksii Iepishkin"});
+        </script>
+    </changeSet>
 </mongoChangeLog>

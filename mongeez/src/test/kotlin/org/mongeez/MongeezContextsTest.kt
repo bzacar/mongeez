@@ -24,6 +24,11 @@ class MongeezContextsTest {
     }
 
     @Test
+    fun testChangesWContextContextSetToUsersExtra() {
+        mongeezTestSuite.testChangesWContextContextSetToUsersExtra()
+    }
+
+    @Test
     fun testChangesWContextContextSetToOrganizations() {
         mongeezTestSuite.testChangesWContextContextSetToOrganizations()
     }

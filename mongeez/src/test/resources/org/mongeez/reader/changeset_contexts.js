@@ -14,3 +14,6 @@ db.house.insert({"Type": "Bungalow"});
 
 // changeset exell:ChangeSet-4 contexts:users, organizations runAlways:true
 db.house.insert({"Type": "Bungalow"});
+
+// changeset mlysaght:ChangeSet-5 contexts:users-extra
+db.user.insert({"Name": "Oleksii Iepishkin"})
