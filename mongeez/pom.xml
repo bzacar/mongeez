@@ -57,7 +57,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
-      <version>5.2.18.RELEASE</version>
+      <version>6.2.10</version>
     </dependency>
 
     <!-- logging -->
